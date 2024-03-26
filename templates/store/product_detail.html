@@ -384,6 +384,25 @@
                 <div class="sspd_pfrice mb15" style="font-size: 13px;"> <small><b>Total: {{cs}}{{total_price|floatformat:2}} </b></small></div>
               {% endif %}
               <hr>
+              <div>
+                <form>
+                  {% csrf_token %}
+                  {% for type in product.product_types.all %}
+                  <div>{{type.title}}:</div>
+                  <div>
+                    {% for choice in type.choices.all %}
+                    <div>
+                      <input type="radio" id="{{ type.title }}_{{ choice.title }}" name="{{ type.title }}" value="{{ choice.title }}"
+                             {% if forloop.first %} checked {% endif %}>
+                      <label for="{{ type.title }}_{{ choice.title }}">{{ choice.title }}</label>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  <hr>
+                  {% endfor %}
+                  {% comment %} <button type="submit">Submit</button> {% endcomment %}
+                </form>
+              </div>
               <div class="shop_single_table style3 table-responsive">
                 <table class="table table-borderless">
                   <thead>
@@ -846,8 +865,50 @@
                   
                   <!-- <input type="hidden" class="product-new-rate{{ product.id }}" value="{{ new_rate }}"> -->
                   
-                  {% include 'store/add_to_cart_product_detail.html' %}
+                  <input type="hidden" class="product-tax-fee-{{ product.id }}" value="{{ new_rate_|floatformat:2 }}" />
+                  <input type="hidden" class="product-processing-fee-{{ product.id }}" value="{{ service_fee_rate_ }}" />
+                  <input type="hidden" class="product-vendor-{{ product.id }}" value="{{ product.vendor.id }}" />
+                  <input type="hidden" class="product-vendor-name-{{ product.id }}" value="{{ product.vendor.shop_name }}" />
+                  <input type="hidden" class="product-brand-{{ product.id }}" value="{{ product.brand }}" />
+                  
+                  <input type="hidden" class="product-types_choices-{{ product.id }}" value="here the json of selected choices" />
+                  
+
+
+                  <input type="hidden" class="product-shipping_amount-{{ product.id }}" value="{{ product.shipping_amount }}" />
+                  <input type="hidden" class="product-quantity-{{ product.id }}" value="1" id="product-quantity" class="w-25 mb-10 product-quantity-{{ product.id }}" />
+                  <input type="hidden" class="product-price-{{ product.id }}" value="{{ product.price }}" />
+                  <input type="hidden" class="product-pid-{{ product.id }}" value="{{ product.pid }}" />
+                  <input type="hidden" class="product-image-{{ product.id }}" value="{{ product.image.url }}" />
+                  <input type="hidden" class="product-id-{{ product.id }}" value="{{ product.id }}" />
+                  <input type="hidden" class="product-title-{{ product.id }}" value="{{ product.title }}" />
+                  <input type="hidden" class="product-meta_title-{{ product.id }}" value="{{ product.meta_title }}" />
+                  <input type="hidden" class="product-slug-{{ product.id }}" value="{{ product.slug }}" />                      
+                  <input type="hidden" class="product-vendor-slug-{{ p.id }}" value="{{ product.vendor.slug }}" />
+                  
+                  <input type="hidden" class="product-stock-qty-{{ product.id }}" value="{{ product.stock_qty }}" />
+                  <input type="hidden" class="product-in-stock-{{ product.id }}" value="{{ product.in_stock }}" />
+
                   <li><button type="button" class="btn purple-btn btnf-thm w100 button-add-to-cart add-to-cart-btn" data-index="{{ product.id }}" id="add-to-cart-btn" style="color: #fff;">Add to cart</button></li>
+                  <script>
+                    document.getElementById('add-to-cart-btn').addEventListener('click', function(event) {
+                      console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+                      event.preventDefault(); // Prevent form submission
+                      
+                      // Construct JSON object of selected choices
+                      var selectedChoices = {};
+                      {% for type in product.product_types.all %}
+                        selectedChoices["{{ type.title }}"] = document.querySelector('input[name="{{ type.title }}"]:checked').value;
+                      {% endfor %}
+                      
+                      // Update value of hidden input field
+                      var hiddenInput = document.querySelector('.product-types_choices-{{ product.id }}');
+                      hiddenInput.value = JSON.stringify(selectedChoices);
+                      
+                      // Now you can submit the form
+                      this.submit();
+                    });
+                  </script>
                   <!-- <button type="submit" class="button button-add-to-cart add-to-cart-btn" data-index="{{ p.id }}" id="add-to-cart-btn"><i class="fi-rs-shopping-cart"></i>Add to cart</button> -->
                 </ul>
                 <ul class="shop_single_wishlist_area d-flex justify-content-center">
@@ -895,18 +956,22 @@
                 <li class="nav-item" role="presentation">
                   <button class="nav-link mt-3 mt-xl-0 mb-0 me-3 me-xl-5 active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="true">Description</button>
                 </li>
+
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link mt-3 mt-xl-0 mb-0 me-3 me-xl-5" id="specifications-tab" data-bs-toggle="tab" data-bs-target="#specifications" type="button" role="tab" aria-controls="specifications" aria-selected="false">Specifications</button>
+                </li>
                 <!-- <li class="nav-item" role="presentation">
                   <button class="nav-link mt-3 mt-xl-0 mb-0 me-3 me-xl-5" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="false">Details & Specs</button>
                 </li>
                 <li class="nav-item" role="presentation">
                   <button class="nav-link mt-3 mt-xl-0 mb-0 me-3 me-xl-5" id="included-tab" data-bs-toggle="tab" data-bs-target="#included" type="button" role="tab" aria-controls="included" aria-selected="false">What's Included</button>
                 </li> -->
-                <li class="nav-item" role="presentation">
+                {% comment %} <li class="nav-item" role="presentation">
                   <button class="nav-link mt-3 mt-xl-0 mb-0 me-3 me-xl-5" id="vendor-tab" data-bs-toggle="tab" data-bs-target="#vendor" type="button" role="tab" aria-controls="vendor" aria-selected="false">Vendor</button>
-                </li>
-                <li class="nav-item" role="presentation">
+                </li> {% endcomment %}
+                {% comment %} <li class="nav-item" role="presentation">
                   <button class="nav-link mt-3 mt-xl-0 mb-0 me-3 me-xl-5" id="returnpolicy-tab" data-bs-toggle="tab" data-bs-target="#returnpolicy" type="button" role="tab" aria-controls="returnpolicy" aria-selected="false">Policy</button>
-                </li>
+                </li> {% endcomment %}
                 <li class="nav-item" role="presentation">
                   <button class="nav-link mt-3 mt-xl-0 mb-0 me-3 me-xl-5" id="qna-tab" data-bs-toggle="tab" data-bs-target="#qna" type="button" role="tab" aria-controls="qna" aria-selected="false">Questions and Answers</button>
                 </li>
@@ -1058,6 +1123,34 @@
                 <div class="tab-pane fade col-xl-12" id="returnpolicy" role="tabpanel" aria-labelledby="returnpolicy-tab">
                   <p class="shipping_return_para mb-0 mt-3">{{ product.vendor.shop_policy|safe }}</p>
                 </div>
+
+                <div class="tab-pane fade col-xl-12" id="specifications" role="tabpanel" aria-labelledby="specifications-tab">
+                  {% comment %} <p class="shipping_return_para mb-0 mt-3">{{ product.vendor.shop_policy|safe }}</p> {% endcomment %}
+                  <div class="Specifications">
+                    <div class="features__title">Specifications:</div>
+                    <div class="product-accordion-panel">
+                        {% for spec in product.specifications.all %}
+                        <div class="product-attribute-redesign">
+                            <h3 class="product-attribute-group-name">{{ spec.title }}</h3>
+                            <div class="col specifications js-productFeatures">
+                                <table class="product-attribute-table-redesign">
+                                    <tbody>
+                                        {% for value in spec.values.all %}
+                                        <tr>
+                                            <th>{{ value.title }}</th>
+                                            <td>{{ value.description }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                  
+                </div>
+
                 <div class="tab-pane fade col-xl-12" id="qna" role="tabpanel" aria-labelledby="qna-tab">
                   <div class="row">
                     <div class="col-xl-8">

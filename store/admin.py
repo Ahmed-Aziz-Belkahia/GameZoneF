@@ -1,5 +1,7 @@
 from django.contrib import admin
-from store.models import CallToActionBanner, CartOrderItem, Choice, Genre, Product ,Category, CartOrder, Gallery, Brand, ProductFaq, Review, ProductBidders, ProductOffers, SubCategory, Type
+from store.models import (CallToActionBanner, CartOrderItem, Choice, Genre, Product, Category, CartOrder, Gallery,
+                         Brand, ProductFaq, Review, ProductBidders, ProductOffers, SubCategory, Type, Specification,
+                         SpecificationValue)
 from import_export.admin import ImportExportModelAdmin
 from django.contrib.auth.admin import UserAdmin
 from django.db import models
@@ -7,15 +9,14 @@ from django.forms import ModelChoiceField
 from userauths.models import User, Profile
 
 
-
 @admin.action(description="Mark selected products as published")
 def make_published(modeladmin, request, queryset):
     queryset.update(status="published")
-    
+
 @admin.action(description="Mark selected products as In Review")
 def make_in_review(modeladmin, request, queryset):
     queryset.update(status="in_review")
-    
+
 @admin.action(description="Mark selected products as Featured")
 def make_featured(modeladmin, request, queryset):
     queryset.update(featured=True)
@@ -23,10 +24,15 @@ def make_featured(modeladmin, request, queryset):
 class ProductImagesAdmin(admin.TabularInline):
     model = Gallery
 
+class SpecificationValueInline(admin.TabularInline):
+    model = SpecificationValue
+
+class SpecificationInline(admin.TabularInline):
+    model = Specification
+    inlines = [SpecificationValueInline]
 
 class CartOrderItemsInlineAdmin(admin.TabularInline):
     model = CartOrderItem
-
 
 class StaffUserChoiceField(ModelChoiceField):
     def label_from_instance(self, obj):
@@ -47,7 +53,7 @@ class TypeAdmin(ImportExportModelAdmin):
     prepopulated_fields = {"meta_title": ("title", )}
 
 class ProductAdmin(ImportExportModelAdmin):
-    inlines = [ProductImagesAdmin, InlineType]
+    inlines = [ProductImagesAdmin, InlineType, SpecificationInline]  # Added SpecificationInline
     search_fields = ['title', 'price']
     list_filter = ['featured', 'status', 'in_stock', 'type', 'vendor']
     list_editable = ['price', 'featured', 'status', 'shipping_amount', 'hot_deal', 'hero_section_featured']
@@ -64,18 +70,6 @@ class ProductAdmin(ImportExportModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-
-
-
-
-# class ProductAdmin(admin.ModelAdmin):
-#     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-#         if db_field.name == 'user':
-#             kwargs['queryset'] = User.objects.filter(is_staff=True)
-#             kwargs['form_class'] = StaffUserChoiceField
-#         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-
 class CategoryAdmin(ImportExportModelAdmin):
     list_display = ['title', 'category_image']
     prepopulated_fields = {"meta_title": ("title", )}
@@ -88,16 +82,12 @@ class GenreAdmin(ImportExportModelAdmin):
     list_display = ['title', 'genre_image']
     prepopulated_fields = {"meta_title": ("title", )}
 
-
-
-
 class CartOrderAdmin(ImportExportModelAdmin):
     inlines = [CartOrderItemsInlineAdmin]
     search_fields = ['oid', 'tracking_id', 'product__title']
     list_editable = ['order_status', 'payment_status' ,'delivery_status']
     list_filter = ['payment_status', 'order_status', 'delivery_status']
     list_display = ['oid', 'payment_status', 'order_status', 'delivery_status' ,'price', 'shipping', 'vat', 'service_fee' ,'total', 'saved' ,'email','date']
-
 
 class CartOrderItemsAdmin(ImportExportModelAdmin):
     search_fields = ['oid', 'tracking_id', 'product', 'coupon__code', 'order__oid', 'vendor__shop_name']
@@ -112,14 +102,13 @@ class BrandAdmin(ImportExportModelAdmin):
 class ProductFaqAdmin(ImportExportModelAdmin):
     list_editable = [ 'active', 'answer']
     list_display = ['user', 'question', 'answer' ,'active']
-    
+
 class ProductBiddersAdmin(ImportExportModelAdmin):
     list_display = ['user', 'product', 'price','winner', 'win_status' ,'email']
 
 class ProductReviewAdmin(admin.ModelAdmin):
     list_editable = ['active']
     list_display = ['user', 'product', 'review', 'reply' ,'rating', 'active']
-
 
 class ProductOfferAdmin(ImportExportModelAdmin):
     list_display = ['user', 'product', 'price','status', 'email']
@@ -128,6 +117,15 @@ class CallToActionBannerAdmin(ImportExportModelAdmin):
     list_editable = ["CTA_type"]
     list_display = ['banner_image', 'product', "CTA_type"]
 
+class SpecificationValueAdmin(admin.ModelAdmin):
+    list_display = ['specification', 'title', 'description']
+    list_filter = ['specification']
+
+class SpecificationAdmin(admin.ModelAdmin):
+    inlines = [SpecificationValueInline]
+    list_display = ['sid', 'product', 'title']
+    search_fields = ['title']
+    list_filter = ['product']
 
 admin.site.register(ProductBidders, ProductBiddersAdmin)
 admin.site.register(Review, ProductReviewAdmin)
@@ -142,3 +140,5 @@ admin.site.register(ProductOffers, ProductOfferAdmin)
 admin.site.register(CallToActionBanner, CallToActionBannerAdmin)
 admin.site.register(Genre, GenreAdmin)
 admin.site.register(Type, TypeAdmin)
+admin.site.register(Specification, SpecificationAdmin)  # Added
+admin.site.register(SpecificationValue, SpecificationValueAdmin)  # Added

@@ -122,11 +122,11 @@ Cart
                       <li class="ms-2 ms-md-3">
                         <a
                           class="cart_title"
-                          href="{% url 'store:product-detail' p.product_slug %}"
+                          href="{% url 'store:product-detail' p.product_meta_title %}"
                         >
                           <span class="fz16">{{p.title|truncatechars:27}}</span>
                           <br />
-                          <span class="fz16">By: <b><i>{{p.shop_name|title}}</i></b></span>
+                          <span class="fz16">By: <b><i>{{p.product_brand|title}}</i></b></span>
                           <br />
                           <span class="fz16">Stock Qty: </a><span id="stock_qty{{product_id}}">{{p.product_stock_qty}}</span></span>
 

@@ -347,7 +347,7 @@ class Product(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,)
     vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, related_name="vendor")
     
-    category = models.ManyToManyField(Category, blank=True, related_name="category")
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name="products")
     subcategory = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name="sub_category")
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True, related_name="product_brand")
 
@@ -542,6 +542,7 @@ class CartOrder(models.Model):
     
     payment_status = models.CharField(max_length=100, choices=PAYMENT_STATUS, default="initiated")
     payment_method = models.CharField(max_length=100, choices=PAYMENT_METHOD, null=True, blank=True)
+    payment_ref = models.CharField(max_length=200, null=True, blank=True)
     order_status = models.CharField(max_length=100, choices=ORDER_STATUS, default="initiated")
     delivery_status = models.CharField(max_length=100, choices=DELIVERY_STATUS, default="on_hold")
     price = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
@@ -610,6 +611,7 @@ class CartOrderItem(models.Model):
     
     invoice_no = models.CharField(max_length=200)
     product = models.CharField(max_length=200)
+    product_types_choices = models.JSONField(null=True, blank=True)
     product_obj = models.ForeignKey(Product, on_delete=models.CASCADE)
     image = models.CharField(max_length=200)
     paid = models.BooleanField(default=False)
@@ -677,3 +679,15 @@ class CallToActionBanner(models.Model):
 
     def banner_image(self):
         return mark_safe('<img src="%s" width="150" height="50" style="object-fit:cover; border-radius: 6px;" />' % (self.banner.url))
+
+
+class Specification(models.Model):
+    sid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmnopqrstuvxyz")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="specifications", null=True, blank=True)
+    title = models.CharField(max_length=100, null=True, blank=True)
+
+class SpecificationValue(models.Model):
+    sid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmnopqrstuvxyz")
+    specification = models.ForeignKey(Specification, on_delete=models.CASCADE, related_name="values", null=True, blank=True)
+    title = models.CharField(max_length=100, null=True, blank=True)
+    description = models.CharField(max_length=255, null=True, blank=True)

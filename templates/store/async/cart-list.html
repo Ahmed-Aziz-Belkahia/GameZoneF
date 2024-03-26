@@ -119,7 +119,7 @@
                         >
                           <span class="fz16">{{p.title|truncatechars:27}}</span>
                           <br />
-                          <span class="fz16">By: <b><i>{{p.shop_name|title}}</i></b></span>
+                          <span class="fz16">By: <b><i>{{p.brand|title}}</i></b></span>
                           <br />
                           <span class="fz16">Stock Qty: </a><span id="stock_qty{{product_id}}">{{p.product_stock_qty}}</span></span>
 
@@ -201,7 +201,7 @@
                 <tr>
                   <td>
                     Your cart is empty,
-                    <a href="{% url 'store:shop' %}">continue shopping</a>
+                    <a href="{% url 'store:home' %}">continue shopping</a>
                   </td>
                 </tr>
                 {% endfor %}

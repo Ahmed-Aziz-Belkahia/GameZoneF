@@ -7,7 +7,8 @@ urlpatterns = [
     path("", views.index, name="home"),
     path("offer/", views.offer, name="offer"),
     path("category/", views.category_list, name="category"),
-    path("shop/<str:meta_title>", views.shop, name="shop"),
+    path("shop/<str:meta_title>", views.category_shop, name="shop"), #change to category shop
+    path("shop/brand/<str:meta_title>", views.brand_shop, name="brand-shop"),
     path("hot_deals/", views.hot_deals, name="hot_deals"),
     path("search/", views.search_list, name="search"),
     path("detail/<str:meta_title>/", views.product_detail, name="product-detail"),
@@ -41,6 +42,9 @@ urlpatterns = [
     # API URLs
     path('api/checkout-session/<id>/', views.create_checkout_session, name='api_checkout_session'),
     path('country_get/', views.country_get, name='country_get'),
+
+
+    path('webhook/', views.webhook, name='webhook'),
 
 
 

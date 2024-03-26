@@ -242,8 +242,8 @@ Checkout
             .then(function (response) {
                 return response.json();
             })
-            .then(function (session) {
-                return stripe.redirectToCheckout({ sessionId: session.sessionId });
+            .then(function (response) {
+                return window.location.href = response.payUrl;
             })
             .then(function (result) {
                 // If `redirectToCheckout` fails due to a browser or network

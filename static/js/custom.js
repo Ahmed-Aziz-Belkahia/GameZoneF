@@ -97,13 +97,14 @@ $(document).on("click", "#question-btn", function(){
         let product_title = $(".product-title-" + index).val()
     
         let product_id = $(".product-id-" + index).val()
-        let product_slug = $(".product-slug-" + index).val()
+        let product_meta_title = $(".product-meta_title-" + index).val()
         let product_price = $(".product-price-" + index).val()
+        let product_types_choices = $(".product-types_choices-" + index).val()
         let product_shipping_amount = $(".product-shipping_amount-" + index).val()
         let product_tax_fee = $(".product-tax-fee-" + index).val()
         let product_processing_fee = $(".product-processing-fee-" + index).val()
         let product_vendor = $(".product-vendor-" + index).val() 
-        let product_vendor_name = $(".product-vendor-name-" + index).val() 
+        let product_brand = $(".product-brand-" + index).val() 
         let product_vendor_slug = $(".product-vendor-slug-" + index).val() 
 
         let product_stock_qty = $(".product-stock-qty-" + index).val() 
@@ -116,13 +117,14 @@ $(document).on("click", "#question-btn", function(){
         console.log("Quantity:", quantity);
         console.log("Title:", product_title);
         console.log("Price:", product_price);
-        console.log("Slug:", product_slug);
+        console.log("Meta title:", product_meta_title);
         console.log("ID:", product_id);
         console.log("PID:", product_pid);
+        console.log("product_types_choices:", product_types_choices);
         console.log("Image:", product_image);
         console.log("product_shipping_amount:", product_shipping_amount);
         console.log("product_vendor:", product_vendor);
-        console.log("product_vendor_name:", product_vendor_name);
+        console.log("product_brand:", product_brand);
         console.log("Index:", index);
         console.log("Currrent Element:", this_val);
         console.log("product_processing_fee:", product_processing_fee);
@@ -143,18 +145,19 @@ $(document).on("click", "#question-btn", function(){
                 url: '/ajax/add-to-cart/',
                 data: {
                     'id': product_id,
-                    'product_slug': product_slug,
+                    'product_meta_title': product_meta_title,
+                    'product_types_choices': product_types_choices,
                     'pid': product_pid,
+                    'product_types_choices': product_types_choices,
                     'image': product_image,
                     'qty': quantity,
                     'title': product_title,
                     'shipping_amount': product_shipping_amount,
                     'vendor': product_vendor,
-                    'vendor_name': product_vendor_name,
+                    'product_brand': product_brand,
                     'price': product_price,
                     'product_processing_fee': product_processing_fee,
                     'product_tax_fee': product_tax_fee,
-                    'product_vendor_slug': product_vendor_slug,
                     'product_stock_qty': product_stock_qty,
                     'product_in_stock': product_in_stock,
                 },
@@ -168,7 +171,7 @@ $(document).on("click", "#question-btn", function(){
                     this_val.html("Added to cart <i class='fas fa-check-circle'></i>")
 
                     console.log("Added Product to Cart!");
-                    $(".cart-items-count").text(response.totalcartitems)
+                    $(".cart-items-count").text(response.totalcartitems + " Items")
         
         
                 }

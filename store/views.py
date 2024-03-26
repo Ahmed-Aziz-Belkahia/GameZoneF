@@ -199,7 +199,7 @@ def nav_search(request):
     return JsonResponse({'success': True, 'queryList': []})
 
 
-def shop(request, meta_title):
+def category_shop(request, meta_title):
     brands = Brand.objects.filter(active=True)
     products = Product.objects.filter(category__meta_title__in=[meta_title], status="published").order_by("-id")
     filtered_products = products
@@ -268,7 +268,85 @@ def shop(request, meta_title):
         'selected_subcategories': selected_subcategories,
         'selected_brands': selected_brands,
     }
-    return render(request, "store/shop.html", context)
+    if products:
+        return render(request, "store/shop.html", context)
+    else:
+       return redirect(reverse("store:home"))
+
+def brand_shop(request, meta_title):
+    brand = Brand.objects.get(meta_title=meta_title)
+    products = Product.objects.filter(brand=brand, status="published").order_by("-id")
+    filtered_products = products
+    products_count = products.count()
+    top_selling = Product.objects.filter(brand=brand, status="published").order_by("-orders")[:20]
+    query_params = request.GET
+
+    # Get category object
+    categories = Category.objects.filter(products__in=products).distinct()
+    # Get all categories and filter products by selected categories
+    selected_categories = request.GET.getlist('categories')
+    if selected_categories:
+        filtered_products = filtered_products.filter(category__meta_title__in=selected_categories)
+
+    # Get direct subcategories objects
+    direct_subcategories = []
+    for category in categories:
+        direct_subcategories.extend(category.subcategories.filter(parent_subcategory=None))
+
+    # Get brands associated with the products
+    # Filter products by price range
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+    if not min_price:
+        min_price = filtered_products.aggregate(min_price=Min('price'))['min_price']
+
+    if not max_price:
+        max_price = filtered_products.aggregate(max_price=Max('price'))['max_price']
+
+    # Filter products by price range
+    if min_price and max_price:
+        filtered_products = filtered_products.filter(price__range=(min_price, max_price))
+    
+    # Filter products by selected direct subcategories
+    selected_subcategories = request.GET.getlist('subcategories')
+    if selected_subcategories:
+        filtered_products = filtered_products.filter(subcategory__meta_title__in=selected_subcategories)
+
+    # Step 1: Get all reviews from products
+    all_reviews = Review.objects.filter(product__in=products)
+    
+    # Step 2: Extract the ratings from these reviews
+    all_ratings = [review.rating for review in all_reviews]
+    
+    # Step 3: Remove duplicate ratings
+    unique_ratings = sorted(set(all_ratings))
+    
+    # Filter products by selected ratings
+    selected_ratings = request.GET.getlist('ratings')
+    if selected_ratings:
+        filtered_products = filtered_products.filter(reviews__rating__in=selected_ratings).distinct()
+
+    # Paginate the filtered products
+    paginator = Paginator(filtered_products, 16)
+    page_number = request.GET.get('page')
+    pages_filtered_products = paginator.get_page(page_number)
+
+    context = {
+        "direct_subcategories": direct_subcategories,
+        "shop_categories": categories,
+        "products_count": products_count,
+        "products": pages_filtered_products,
+        "top_selling": top_selling,
+        "min_price": min_price,
+        "max_price": max_price,
+        'all_ratings': [(rating, '★' * rating + '☆' * (5 - rating)) for rating in unique_ratings],
+        'selected_ratings': selected_ratings,
+        'selected_subcategories': selected_subcategories,
+    }
+    if products:
+        return render(request, "store/brands_shop.html", context)
+    else:
+       return redirect(reverse("store:home"))
 
 
 def hot_deals(request):
@@ -502,7 +580,7 @@ def product_detail(request, meta_title):
         service_fee_rate = 0
         
         
-    location_country = request.session['location_country']
+    location_country = "Tunisia"
     
     tax = TaxRate.objects.filter(country=location_country, active=True).first()
     if tax:
@@ -583,7 +661,7 @@ def product_detail(request, meta_title):
                         msg.attach_alternative(html_body, "text/html")
                         msg.send()
                     messages.success(request, f"Offer submitted successfully.")
-                    return redirect("store:product-detail", product.slug)
+                    return redirect("store:product-detail", product.meta_title)
 
             if make_offer == False:
                 if request.method == "POST":
@@ -613,7 +691,7 @@ def product_detail(request, meta_title):
                         msg.send()
                         # Email ==========================
                     
-                    return redirect("store:product-detail", product.slug)
+                    return redirect("store:product-detail", product.meta_title)
                 
     if request.user.is_authenticated:
         if product.type == "auction":
@@ -660,7 +738,7 @@ def product_detail(request, meta_title):
                     price = request.POST.get("bidding_amount")
                     if Decimal(price) < product.price:
                         messages.warning(request, "You bidding price cannot be lower than the starting price")
-                        return redirect("store:product-detail", product.slug)
+                        return redirect("store:product-detail", product.meta_title)
                     
                     bid = ProductBidders.objects.create(
                         user=request.user,
@@ -702,14 +780,14 @@ def product_detail(request, meta_title):
                         msg.send()
                     # Email ==========================
                     
-                    return redirect("store:product-detail", product.slug)
+                    return redirect("store:product-detail", product.meta_title)
                 
             if make_bid == False:
                 if request.method == "POST":
                     price = request.POST.get("bidding_amount_update")
                     if Decimal(price) < my_bid_obj.price:
                         messages.warning(request, "You New bidding price cannot be lower than your previous price")
-                        return redirect("store:product-detail", product.slug)
+                        return redirect("store:product-detail", product.meta_title)
                     
                     my_bid_obj.price = price
                     my_bid_obj.save()
@@ -736,7 +814,7 @@ def product_detail(request, meta_title):
                         msg.send()
                         # Email ==========================
                     
-                    return redirect("store:product-detail", product.slug)
+                    return redirect("store:product-detail", product.meta_title)
 
     context = {
         "bidders":bidders,
@@ -840,17 +918,17 @@ def add_to_cart(request):
         'title': request.GET['title'],
         'qty': request.GET['qty'],
         'price': request.GET['price'],
-        'product_slug': request.GET['product_slug'],
+        'product_meta_title': request.GET['product_meta_title'],
+        'product_types_choices': request.GET['product_types_choices'],
         'shipping_amount': request.GET['shipping_amount'],
         'vendor': request.GET['vendor'],
-        'shop_name': request.GET['vendor_name'],
+        'product_brand': request.GET['product_brand'],
         'image': request.GET['image'],
         'pid': request.GET['pid'],
         'product_processing_fee': request.GET['product_processing_fee'],
         'product_tax_fee': request.GET['product_tax_fee'],
         "product_stock_qty":request.GET["product_stock_qty"],
         "product_in_stock":request.GET["product_in_stock"],        
-        "product_vendor_slug":request.GET["product_vendor_slug"],
 
     }
 
@@ -901,14 +979,14 @@ def cart_view(request):
     # tax_rate = 0
     
     try:
-        location_country = request.session['location_country']
+        location_country = "Tunisia"
         tax_country = TaxRate.objects.filter(country=location_country).first()
         tax_rate = tax_country.rate / 100
         # print("tax_rate =====================", tax_rate)
         # print("location_country =====================", location_country)
         
     except:
-        location_country = "United States"
+        location_country = "Tunisia"
         tax_country = TaxRate.objects.filter(country=location_country).first()
         tax_rate = tax_country.rate / 100
         # print("location_country =====================", location_country)
@@ -1167,14 +1245,14 @@ def shipping_address(request):
     # tax_rate = 0
     
     try:
-        location_country = request.session['location_country']
+        location_country = "Tunisia"
         tax_country = TaxRate.objects.filter(country=location_country).first()
         tax_rate = tax_country.rate / 100
         # print("tax_rate =====================", tax_rate)
         # print("location_country =====================", location_country)
         
     except:
-        location_country = "United States"
+        location_country = "Tunisia"
         tax_country = TaxRate.objects.filter(country=location_country).first()
         tax_rate = tax_country.rate / 100
         # print("location_country =====================", location_country)
@@ -1359,6 +1437,7 @@ def shipping_address(request):
                     product_obj=product,
                     price=item['price'],
                     shipping=item_shipping,
+                    product_types_choices=item['product_types_choices'],
                     paid_vendor=False,
                     original_grand_total=original_grand_total,
                     grand_total=grand_total,
@@ -1819,12 +1898,12 @@ class PaymentConfirmation(DetailView):
 from django.core.mail import send_mail
 
 def PaymentSuccessView(request):
-    session_id = request.GET.get('session_id')
-    if session_id is None:
+    payment_ref = request.GET.get('payment_ref')
+    if payment_ref is None:
         return HttpResponseNotFound()
-    stripe.api_key = settings.STRIPE_SECRET_KEY
-    session = stripe.checkout.Session.retrieve(session_id)
-    order = get_object_or_404(CartOrder, stripe_payment_intent=session.id)
+    
+    # Fetch the order associated with the payment reference
+    order = get_object_or_404(CartOrder, payment_ref=payment_ref)
     
     if order.payment_status == "processing":
         order.payment_status = "paid"
@@ -1832,169 +1911,210 @@ def PaymentSuccessView(request):
         order.delivery_status = "shipping_processing"
         order.save()
         
+        # Update order items, send email notifications, update product stock, and payout vendors
+        update_order_details(order)
         
+    elif order.payment_status == "paid":
+        messages.success(request, f'Your order has been received.')
+        return redirect("core:profile")
+    else:
+        messages.success(request, 'Oops... Internal Server Error; please try again later')
+        return redirect("core:profile")
         
-        CartOrderItem.objects.filter(order=order, order__payment_status="paid").update(paid=True, delivery_status="shipping_processing")
-        order_items = CartOrderItem.objects.filter(order=order, order__payment_status="paid")
-        
-        company = Company.objects.all().first()
-        basic_addon = BasicAddon.objects.all().first()
+    products = CartOrderItem.objects.filter(order=order)
+    return render(request, "payment/payment_success.html", {"order": order, 'products': products}) 
 
-        if basic_addon.send_email_notifications == True:
+def update_order_details(order):
+    # Update order items
+    CartOrderItem.objects.filter(order=order, order__payment_status="processing").update(paid=True, delivery_status="shipping_processing")
+    
+    order_items = CartOrderItem.objects.filter(order=order, order__payment_status="processing")
+    
+    company = Company.objects.all().first()
+    basic_addon = BasicAddon.objects.all().first()
+
+    # Send email notifications to the customer
+    if basic_addon.send_email_notifications:
+        merge_data = {
+            'company': company, 
+            'order': order, 
+            'order_items': order_items, 
+        }
+        subject = f"Order Placed Successfully. ID {order.oid}"
+        text_body = render_to_string("email/message_body.txt", merge_data)
+        html_body = render_to_string("email/message_customer.html", merge_data)
+        
+        msg = EmailMultiAlternatives(
+            subject=subject, from_email=settings.FROM_EMAIL,
+            to=[order.email], body=text_body
+        )
+        msg.attach_alternative(html_body, "text/html")
+        msg.send()
+
+    # Update product stock and perform vendor payouts
+    for order_item in order_items:
+        order_item.product_obj.stock_qty -= order_item.qty
+        order_item.product_obj.save()
+        
+        amount = order_item.total_payable + order_item.shipping
+        
+        PayoutTracker.objects.create(vendor=order_item.vendor, currency=order_item.vendor.currency, amount=amount, item=order)
+        Notification.objects.create(vendor=order_item.vendor, user=order_item.vendor.user, type="new_order", product=order_item.product_obj, amount=amount, order=order)
+        
+        if basic_addon.send_email_notifications:
+            # Vendor Email
             merge_data = {
                 'company': company, 
-                'order': order, 
-                'order_items': order_items, 
+                'o': order_item, 
             }
-            subject = f"Order Placed Successfully. ID {order.oid}"
+            subject = f"New Order for {order_item.product_obj.title}"
             text_body = render_to_string("email/message_body.txt", merge_data)
-            html_body = render_to_string("email/message_customer.html", merge_data)
+            html_body = render_to_string("email/message_body.html", merge_data)
             
             msg = EmailMultiAlternatives(
                 subject=subject, from_email=settings.FROM_EMAIL,
-                to=[order.email], body=text_body
+                to=[order_item.vendor.shop_email], body=text_body
             )
             msg.attach_alternative(html_body, "text/html")
             msg.send()
 
+    # Update vendor wallets
+    for vendor in order.vendor.all():
+        cart_order_items = CartOrderItem.objects.filter(order=order, order__payment_status="processing", vendor=vendor).aggregate(amount=models.Sum(F('total_payable') + F('shipping')))
         
-        for o in order_items:
-            o.product_obj.stock_qty -= o.qty
-            o.product_obj.save()
-            
-            amount = o.total_payable +  o.shipping
-            
-            PayoutTracker.objects.create(vendor=o.vendor, currency=o.vendor.currency, amount=amount, item=order)
-            Notification.objects.create(vendor=o.vendor, user=o.vendor.user, type="new_order", product=o.product_obj, amount=amount, order=o.order)
-            
-            company = Company.objects.all().first()
-            basic_addon = BasicAddon.objects.all().first()
-            
-            
-            if basic_addon.send_email_notifications == True:
-                # Vendor Email
-                merge_data = {
-                    'company': company, 
-                    'o': o, 
-                }
-                subject = f"New Order for {o.product_obj.title}"
-                text_body = render_to_string("email/message_body.txt", merge_data)
-                html_body = render_to_string("email/message_body.html", merge_data)
-                
-                msg = EmailMultiAlternatives(
-                    subject=subject, from_email=settings.FROM_EMAIL,
-                    to=[o.vendor.shop_email], body=text_body
-                )
-                msg.attach_alternative(html_body, "text/html")
-                msg.send()
-                
-                
-                
-            
-        for o in order.vendor.all():
+        basic_addon = BasicAddon.objects.all().first()
         
-            # cart_order_items = CartOrderItem.objects.filter(order=order, order__payment_status="paid", vendor=o).aggregate(amount=models.Sum('total_payable'))
-            
-            cart_order_items = CartOrderItem.objects.filter(order=order, order__payment_status="paid", vendor=o).aggregate(amount=models.Sum(F('total_payable') + F('shipping')))
-            print("cart_order_items =========", round(cart_order_items['amount'], 2))
-            basic_addon = BasicAddon.objects.all().first()
-            
-            if basic_addon.payout_vendor_fee_immediately == True:
-                if o.payout_method == 'payout_to_stripe':
-                    stripe.Transfer.create(
-                        amount=int(cart_order_items['amount']) * 100,
-                        currency="usd",
-                        destination=o.stripe_user_id,
-                        transfer_group="ORDER_95",
-                    )
-                    
-                
-                if o.payout_method == 'payout_to_paypal':
-                    timestamp = d.now()
-                    # timestamp = timezone.now()
-                    username = settings.PAYPAL_CLIENT_ID
-                    password = settings.PAYPAL_SECRET_ID
-                    headers = {'Content-Type': 'application/json',}
-                    data = '{"sender_batch_header": {"sender_batch_id": "Payouts_' + str(timestamp) + '","email_subject": "You have a payout!","email_message": "You have received a payout for an order!"},"items": [{"recipient_type": "EMAIL","amount": {"value": "'+ str(round(cart_order_items['amount'], 2)) +'","currency": "'+ str(o.currency) +'"},"note": "Thanks for your patronage!","sender_item_id": "201403140001","receiver": "'+ str(o.paypal_email_address) +'","notification_language": "en-US"}]}'
-                    response = requests.post('https://api-m.sandbox.paypal.com/v1/payments/payouts', headers=headers, data=data, auth=(username, password))
-                    
-                    print("Response ============", response)
-                    print("date ============", data)
-                    
-                    
-                    
-                if o.payout_method == 'payout_to_wallet':
-                    o.wallet += cart_order_items['amount']
-                    o.save()
-            else:
-                o.wallet += cart_order_items['amount']
-                o.save()
-                
-            
-            o.save()
-            
-    elif order.payment_status == "paid":
-        messages.success(request, f'Your Order have been recieved.')
-        return redirect("core:buyer-dashboard")
-    else:
-        messages.success(request, 'Opps... Internal Server Error; please try again later')
-        return redirect("core:buyer-dashboard")
-        
-    products = CartOrderItem.objects.filter(order=order)
-    return render(request, "payment/payment_success.html", {"order": order, 'products':products}) 
+        if basic_addon.payout_vendor_fee_immediately:
+            if vendor.payout_method == 'payout_to_wallet':
+                vendor.wallet += cart_order_items['amount']
+                vendor.save()
+        else:
+            vendor.wallet += cart_order_items['amount']
+            vendor.save()
 
 def PaymentFailedView(request):
-    session_id = request.GET.get('session_id')
-    if session_id is None:
+    payment_ref = request.GET.get('payment_ref')
+    if payment_ref is None:
         return HttpResponseNotFound()
     
-    stripe.api_key = settings.STRIPE_SECRET_KEY
-    session = stripe.checkout.Session.retrieve(session_id)
-    print("session ===========", session)
-    order = get_object_or_404(CartOrder, stripe_payment_intent=session.id)
+    # Fetch the order associated with the payment reference
+    order = get_object_or_404(CartOrder, payment_ref=payment_ref)
+    
+    # Update the order status for failed payment
     order.payment_status = "failed"
     order.save()
-    print("order ====", order)
     
     return render(request, "payment/payment_failed.html", {"order": order}) 
 
 @csrf_exempt
 def create_checkout_session(request, id):
-
     request_data = json.loads(request.body)
     order = get_object_or_404(CartOrder, oid=id)
 
-    stripe.api_key = settings.STRIPE_SECRET_KEY
-    checkout_session = stripe.checkout.Session.create(
-        customer_email = order.email,
-        payment_method_types=['card'],
-        line_items=[
-            {
-                'price_data': {
-                    'currency': 'usd',
-                    'product_data': {
-                    'name': order.full_name,
-                    },
-                    
-                    'unit_amount': int(order.total * 100),
-                },
-                'quantity': 1,
-            }
-        ],
-        mode='payment',
-        success_url=request.build_absolute_uri(
-            reverse('store:success')
-        ) + "?session_id={CHECKOUT_SESSION_ID}",
-        cancel_url=request.build_absolute_uri(reverse('store:failed'))+ "?session_id={CHECKOUT_SESSION_ID}",
-    )
+    # Call initiate_payment to start the payment process
+    payment_data = initiate_payment(request, orderId=id, amount=order.total)
+    if "paymentRef" in payment_data:
+        payment_ref = payment_data["paymentRef"]
+        # Construct success and fail URLs
+        success_url = request.build_absolute_uri(reverse('store:success'))
+        fail_url = request.build_absolute_uri(reverse('store:failed'))
 
-    order.payment_status = "processing"
-    order.stripe_payment_intent = checkout_session['id']
-    order.save()
+        # Update order with payment reference
+        order.payment_status = "processing"
+        order.payment_ref = payment_ref  # Save payment_ref to the order
+        order.save()
 
-    print("checkout_session ==============", checkout_session)
-    return JsonResponse({'sessionId': checkout_session.id})
+        # Return the payment URL and payment reference to frontend
+        return JsonResponse({"payUrl": payment_data["payUrl"], "paymentRef": payment_ref})
+    else:
+        # If payment initiation fails, return error response
+        return JsonResponse({"error": payment_data["error"]}, status=400)
 
+def initiate_payment(request, orderId, amount):
+    # Make sure to replace these values with your actual credentials and data
+    api_key = '665ddd89ecb4e3b38d776b78a:5usETKkdz0MZwYpgWLMIQXg2gtyNgGp'
+    konnect_wallet_id = '65f0e6d5f85f11d7b8c06008'
+
+    url = "https://api.preprod.konnect.network/api/v2/payments/init-payment"
+    headers = {
+        "x-api-key": '65f0e6d5f85f11d7b8c06004:x3QEEv76q8kvnSxAXTqjMljIeYLz',
+        "Content-Type": "application/json"
+    }
+    webhook_url = request.build_absolute_uri(reverse('store:webhook'))
+    success_url = request.build_absolute_uri(reverse('store:success'))
+    fail_url = request.build_absolute_uri(reverse('store:failed'))
+    amount_float = float(amount)
+    profile = request.user.profile
+
+    payload = {
+        "receiverWalletId": konnect_wallet_id,
+        "token": "TND",
+        "amount": amount_float * 1000,  # Convert to smallest currency unit
+        "type": "immediate",
+        "description": "payment description",
+        "acceptedPaymentMethods": ["bank_card"],
+        "lifespan": 10,
+        "checkoutForm": True,
+        "addPaymentFeesToAmount": True,
+        "firstName": profile.user.first_name,  # Access user's first name from profile
+        "lastName": profile.user.last_name,    # Access user's last name from profile
+        "phoneNumber": profile.phone,          # Access phone from profile
+        "email": profile.user.email,           # Access user's email from profile
+        "orderId": orderId,
+        "webhook": webhook_url,
+        "silentWebhook": True,
+        "successUrl": success_url,
+        "failUrl": fail_url,
+        "theme": "dark"
+    }
+
+    response = requests.post(url, headers=headers, json=payload)
+    print(response.json())
+    if response.status_code == 200:
+        data = response.json()
+        return data
+    else:
+        error_message = "Failed to initiate payment"
+        return {"error": error_message}
+
+def webhook(request):
+    payment_ref = request.GET.get("payment_ref")
+    if payment_ref:
+        # Query Konnect API to get payment details
+        payment_status = get_payment_status(payment_ref)
+        print(payment_status)
+        # Process payment status and update database or trigger actions
+        # Example: Update database with payment status
+        # payment.update(status=payment_status)
+        return JsonResponse({"message": "Webhook received", "payment status": payment_status})
+    else:
+        return JsonResponse({"error": "Payment reference ID not provided"})
+
+def get_payment_status(payment_ref):
+    # Make a request to Konnect API to get payment details
+    # Replace 'YOUR_KONNECT_API_KEY' with your actual API key
+    api_key = '665ddd89ecb4e3b38d776b78a:5usETKkdz0MZwYpgWLMIQXg2gtyNgGp'
+    url = f"https://api.preprod.konnect.network/api/v2/payments/{payment_ref}"
+    headers = {"x-api-key": api_key}
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        payment_data = response.json()
+        payment_status = payment_data.get("payment", {}).get("status")
+        return payment_status
+    else:
+        error_message = "Failed to get payment status"
+        if response.status_code == 401:
+            error_message = "Unauthorized: API key is invalid or missing"
+        elif response.status_code == 403:
+            error_message = "Forbidden: You do not have permission to access this resource"
+        elif response.status_code == 404:
+            error_message = "Not Found: The requested resource was not found"
+        elif response.status_code == 422:
+            error_message = "Unprocessable Entity: The request was well-formed but failed validation"
+        elif response.status_code == 502:
+            error_message = "Bad Gateway: The server was acting as a gateway or proxy and received an invalid response from the upstream server"
+        
+        return error_message
 
 
 def payment_completed_view(request, oid, *args, **kwargs):
