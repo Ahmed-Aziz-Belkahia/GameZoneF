@@ -1,0 +1,62 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block title %}<title>GameZone</title>{% endblock title %}
+    <script src="https://kit.fontawesome.com/f45f6ff45f.js" crossorigin="anonymous"></script>
+    <link rel="icon" type="image/png" href="{% static '/gz/assets/favicon.ico' %}">
+    <link rel="stylesheet" href="{% static '/gz/styles/base.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="{% static '/gz/js/components/vanilla-tilt.js' %}"></script>
+    <script src="https://cdn.lordicon.com/lordicon.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    
+    <!-- Include jQuery UI -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+    
+
+        
+    {% block head %}{% endblock head %}
+
+    
+</head>
+
+<body class="body">
+
+    <header class='header'>
+        {% block header %}{% endblock header %}
+    </header>
+
+    <script src="https://unpkg.com/sweetalert2@7.8.2/dist/sweetalert2.all.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <script>
+        {% for message in messages %}
+        Swal.fire({
+          icon: '{{message.tags}}',
+          title: '{{message.tags}}',
+          text: '{{message}}',
+          timer: 3500
+        })
+        {% endfor %}
+      </script>
+    <main class="main" id="main">
+        {% block main %}empty here{% endblock main %}
+    </main>
+
+    {% block footer %}{% endblock footer %}
+
+    {% block scripts %}{% endblock scripts %}
+</body>
+

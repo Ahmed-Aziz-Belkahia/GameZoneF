@@ -1,0 +1,74 @@
+{% load static %}
+<link rel="stylesheet" href="{% static "gz/styles/components/top-deals.css" %}">
+
+<div class="main__top-deals flexCenter">
+
+    <div class="top-deals__div flexCenter">
+
+        <div class="top-deals__layer1 top-deals__layer">
+            <div class="layer1__text">
+
+                <div class="text__title">Top Deals</div>
+                <div class="text__slogan">
+                    Save big on stuff you love
+                </div>
+
+            </div>
+
+        </div>
+        <div class="top-deals__layer2 top-deals__layer">
+
+            <div class="layer2__cards flexCenter">
+                
+                {% for product in top_deals %}
+                    <a href="product/{{product.meta_title}}">
+                        <div class="cards__card">
+
+                            <div class="card__upper flexCenter">{{product.title}}</div>
+
+                            <div class="card__lower flexCenter">
+                            
+                                <div class="lower__div">
+                                
+                                    <div class="lower__img flexCenter">
+                                        <img src="{{product.deal_image.url}}" alt="{{product.title}}">
+                                    </div>
+                                    <div class="lower__content flexCenter">
+                                    
+                                        <div class="content__price">{{product.price}}TND</div>
+                                        <div class="content__text">{{product.deal_description}}</div>
+                                    
+                                    </div>
+                                
+                                </div>
+                            
+                            </div>
+                        
+                        </div>
+                    </a>
+                {% endfor %}
+                
+
+            </div>
+
+        </div>
+        <div class="top-deals__layer3 top-deals__layer">
+
+            <a href="product/{{top_deals_banner.product.meta_title}}">
+                <div class="layer__CTA">
+
+                    <div class="layerCTA__div flexCenter">
+    
+                        <div class="layerCTA__img">
+                            <img src="{{top_deals_banner.banner.url}}" alt="{{top_deals_banner.product.title}}">
+                        </div>
+                    </div>
+    
+                </div>
+    
+                </div>
+            </a>
+
+        </div>
+
+</div>

@@ -1,0 +1,12 @@
+.env
+
+addons/migrations
+blog/migrations
+core/migrations
+ecommerce_prj/migrations
+help_center/migrations
+reports/migrations
+store/migrations
+userauths/migrations
+vendor/migrations
+geoip
