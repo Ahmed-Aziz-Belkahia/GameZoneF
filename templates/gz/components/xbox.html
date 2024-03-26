@@ -14,7 +14,7 @@
         
         <div class="xbox__layer3 xbox__layer">
             <div class="layer__CTA">
-                <a href="product/{{nintendo_banner.product.meta_title}}" class="layerCTA__div flexCenter">
+                <a href="/detail/{{nintendo_banner.product.meta_title}}" class="layerCTA__div flexCenter">
                     <div class="layerCTA__img">
                         <img src="{{nintendo_banner.banner.url}}" alt="{{nintendo_banner.product.title}}">
                     </div>
@@ -24,7 +24,7 @@
 
       <!-- <div class="xbox__layer2 xbox__layer">
             <div class="layer2__cards flexCenter">
-                <!--<a href="product/{{ xbox_deals.deal_1.product.meta_title }}"> 
+                <!--<a href="/detail/{{ xbox_deals.deal_1.product.meta_title }}"> 
                     <div class="cards__card">
                         <div class="card__upper flexCenter">{{ xbox_deals.deal_1.product.title }}</div>
                         <div class="card__lower flexCenter">
@@ -41,7 +41,7 @@
                     </div>
                 </a>
 
-               <a href="product/{{ xbox_deals.deal_2.product.meta_title }}">
+               <a href="/detail/{{ xbox_deals.deal_2.product.meta_title }}">
                     <div class="cards__card">
                         <div class="card__upper flexCenter">{{ xbox_deals.deal_2.product.title }}</div>
                         <div class="card__lower flexCenter">
@@ -63,7 +63,7 @@
             <div class="layer2__cards flexCenter">
                 
                 {% for product in nintendo_deals %}
-                    <a href="product/{{ product.meta_title }}">
+                    <a href="/detail/{{ product.meta_title }}">
                         <div class="cards__card">
                             <div class="card__upper flexCenter">{{ product.title }}</div>
                             <div class="card__lower flexCenter">

@@ -10,7 +10,7 @@
         <div class="accesoriesCatalog__items flexCenter">
             <div class="accesoriesCatalog__list">
                 {% for accessory in top_accessories %}
-                <a href="product/{{accessory.meta_title}}" class="accesoriesCatalog__item flexCenter">
+                <a href="/detail/{{accessory.meta_title}}" class="accesoriesCatalog__item flexCenter">
                     <div class="item__div flexCenter">
                         <div class="item__img flexCenter">
                             <img src="{{ accessory.image.url }}" alt="{{ accessory.title }}">

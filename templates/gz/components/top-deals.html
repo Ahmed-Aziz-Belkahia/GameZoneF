@@ -21,7 +21,7 @@
             <div class="layer2__cards flexCenter">
                 
                 {% for product in top_deals %}
-                    <a href="product/{{product.meta_title}}">
+                    <a href="/detail/{{product.meta_title}}">
                         <div class="cards__card">
 
                             <div class="card__upper flexCenter">{{product.title}}</div>
@@ -54,7 +54,7 @@
         </div>
         <div class="top-deals__layer3 top-deals__layer">
 
-            <a href="product/{{top_deals_banner.product.meta_title}}">
+            <a href="/detail/{{top_deals_banner.product.meta_title}}">
                 <div class="layer__CTA">
 
                     <div class="layerCTA__div flexCenter">

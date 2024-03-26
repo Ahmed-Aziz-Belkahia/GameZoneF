@@ -9,7 +9,7 @@
         <div class="featuredGameCTA__slider swiper mySwiperMini">
             <div class="swiper-wrapper">
                 {% for game in featured_games_sliders %}
-                <a href="product/{{ game.meta_title }}" class="swiper-slide unselectable">
+                <a href="/detail/{{ game.meta_title }}" class="swiper-slide unselectable">
                     <img src="{{ game.featured_game_slider_banner.url }}" alt="{{ game.title }}">
                 </a>
                 {% endfor %}

@@ -9,7 +9,7 @@
 
         
         {% for genre in featured_genres %}
-            <a href="catalog?genre={{genre.meta_title}}" class="featuredGamesCategorys__game flexCenter">
+            <a href="shop?genre={{genre.meta_title}}" class="featuredGamesCategorys__game flexCenter">
                 <img src="{{genre.featured_image.url}}" alt="{{genre.title}}">
             </a>
         {% endfor %}

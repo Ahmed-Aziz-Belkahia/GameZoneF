@@ -438,7 +438,7 @@ def offer(request):
 
 
 def product_detail(request, meta_title):
-    product = Product.objects.get(status="published", slug=slug)
+    product = Product.objects.get(status="published", meta_title=meta_title)
     
     if product.status == "disabled":
         return redirect("store:home")

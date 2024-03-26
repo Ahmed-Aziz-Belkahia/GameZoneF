@@ -8,7 +8,7 @@
 
         <div class="broweByCategory__categorys flexCenter">
             {% for category in categories %}
-            <a href="catalog?category={{ category.id }}" class="categorys__category flexCenter">
+            <a href="/catalog/{{ category.meta_title }}" class="categorys__category flexCenter">
                 <div class="category__img flexCenter">
                     <div class="img__div flexCenter">
                         <img src="{{ category.image.url }}" alt="{{ category.title }}">

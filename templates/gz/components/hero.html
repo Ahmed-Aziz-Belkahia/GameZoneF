@@ -11,7 +11,7 @@
           <div class="swiper-wrapper">
               {% for hero in heros %}
               <div class="swiper-slide unselectable">
-                  <a href="product/{{ hero.product.meta_title }}"><img src="{{ hero.hero_banner.url }}" alt="{{ hero.title }}"></a>
+                  <a href="/detail/{{ hero.meta_title }}"><img src="{{ hero.hero_banner.url }}" alt="{{ hero.title }}"></a>
               </div>
               {% endfor %}
           </div>
