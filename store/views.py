@@ -535,9 +535,9 @@ def product_detail(request, meta_title):
 
     relatedproduct = None  # Initialize relatedproduct outside the loop
     
-    for c in product.category.all():
-        relatedproduct = Product.objects.filter(category=c, status="published").order_by("-id")[:5]
-        break  # Exit the loop after finding related products for the first category
+    
+    relatedproduct = Product.objects.filter(category=product.category, status="published").order_by("-id")[:5]
+    # Exit the loop after finding related products for the first category
     
     youmightlike = Product.objects.filter(status="published").order_by("orders")[:5]
     

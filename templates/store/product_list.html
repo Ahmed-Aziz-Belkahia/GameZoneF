@@ -1,7 +1,7 @@
 <div class="item border-rounded-cus" style="margin-top: 10px;padding-left: 10px; border-radius: 20px;">
     <div class="shop_item small_style bdrs6 hvr_bdr1 home2_style border border-rounded-cus">
         <div class="thumb pb30">
-            <a href="{% url 'store:product-detail' p.slug %}">
+            <a href="{% url 'store:product-detail' p.meta_title %}">
                 <img src="{{p.image.url}}"
                     style="height: 200px; width: 100%; object-fit: cover; border-radius: 3px;"
                     class="product-img-avatar" alt="Best Seller Item"
@@ -17,11 +17,11 @@
             
             {% if p.in_stock == True and p.stock_qty != 0 %}
                 {% if p.type == "auction" %}
-                    <div class="shop_item_cart_bftn d-grid mt-2"><a class="btn purple-btn" href="{% url 'store:product-detail' p.slug %}">Join Bidding Now</a></div>
+                    <div class="shop_item_cart_bftn d-grid mt-2"><a class="btn purple-btn" href="{% url 'store:product-detail' p.meta_title %}">Join Bidding Now</a></div>
                 {% endif %}
 
                 {% if p.type == "offer" %}
-                    <div class="shop_item_cart_bftn d-grid mt-2"><a class="btn purple-btn" href="{% url 'store:product-detail' p.slug %}">Submit Price Offer</a></div>
+                    <div class="shop_item_cart_bftn d-grid mt-2"><a class="btn purple-btn" href="{% url 'store:product-detail' p.meta_title %}">Submit Price Offer</a></div>
                 {% endif %}
 
                 {% if p.type == "regular" %}
@@ -33,7 +33,7 @@
         </div>
         <div class="details">
             <div class="title mt-0 mb0 mb-0 mt0"><a
-                    href="{% url 'store:product-detail' p.slug %}">{{p.title|title|truncatechars:27}}</a>
+                    href="{% url 'store:product-detail' p.meta_title %}">{{p.title|title|truncatechars:27}}</a>
             </div>
             <div class="sub_title mt-0 mb0 mb-2 mb2"><a
                     href="{% url 'vendor:vendor_shop_view_page' p.vendor.vid %}"
