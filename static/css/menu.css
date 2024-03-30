@@ -15,7 +15,7 @@
         display: none !important
     }
     .mobile-menu {
-        display: block
+        display: none;
     }
     .header,
     .footer {

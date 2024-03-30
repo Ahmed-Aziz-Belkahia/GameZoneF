@@ -145,14 +145,22 @@
                         <h2>Hi, {{user.username}}</h2>
                         <ul class="user_options">
                             <li class="option_link">
+                                <span class="fas fa-user"></span>
                                 <a href="{% url "core:profile" %}">Account Overview 
                                 </a>
                             </li>
                             <li class="option_link">
+                                <span class="fas fa-list"></span>
                                 <a href="{% url "core:buyer-orders" %}">Orders 
                                 </a>
                             </li>
+                            <li class="option_link">
+                                <span class="fas fa-heart"></span>
+                                <a href="{% url "core:buyer-orders" %}">Wishlist 
+                                </a>
+                            </li>
                             <li class="option_link signout">
+                                <span class="fas fa-right-from-bracket"></span>
                                 <a href="{% url "userauths:sign-out" %}">Sign Out</a>
                             </li>
                         </ul>
@@ -163,11 +171,14 @@
             {% endif %}
 
             <a href="{% url "store:cart-view" %}">
-                <div class="navigation__cart navigation__element">
+                <div class="navigation__cart navigation__element mobile-cart">
                     <i class="fa-solid fa-cart-shopping"></i>
                     <div class="cart__text cart-items-count">{{request.session.cart_data_obj|length}} Items</div>
+                    <div class="cart__text cart-items-count mobile-cart-items-count">{{request.session.cart_data_obj|length}}</div>
+
                 </div>
             </a>
+            
 
         </div>
 

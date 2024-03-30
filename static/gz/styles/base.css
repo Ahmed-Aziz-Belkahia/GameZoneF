@@ -106,6 +106,7 @@ p {
 a:any-link {
     color: black;
     font-weight: 500;
+    text-decoration: none;
 }
 
 a:hover,
@@ -120,4 +121,28 @@ a:active {
 @media screen and (max-width: 1440px) {
 
     
+}
+.preloader {
+    background-color: #eaeaea;
+    background-image: url(../../images/preloader.gif);
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 99999;
+}
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #ededed;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #94d92f;
+    border-radius: 10px;
 }

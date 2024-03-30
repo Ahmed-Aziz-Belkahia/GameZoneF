@@ -1,6 +1,6 @@
 .header__div {
     width: 100%;
-     height: 126px; 
+     height: 136px; 
     color: black;
 }
 
@@ -116,6 +116,7 @@ height: fit-content;
     background: none;
     border: none;
     margin: 0;
+    font-size: medium;
 }
 
 .navbar__navigation {
@@ -137,6 +138,7 @@ height: fit-content;
     font-size: 1.25rem;
     flex-flow: column nowrap;
     padding: .5rem 0;
+    width: max-content;
 }
 
 .navigation__sign-in {
@@ -187,7 +189,7 @@ height: fit-content;
 .header__categories {
     z-index: 40;
     position: fixed;
-    top: 77px;
+    top: 86px;
     left: 0;
     width: 100%;
     background-color: #f0f0f0;
@@ -271,9 +273,13 @@ height: fit-content;
     gap: 30PX;
 }
 .user_sidemenu_wrapper .option_link{
-    font-size: larger;
     padding: 0;
     margin: 0;
+    font-size: 20px;
+    vertical-align: middle;
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 .user_sidemenu_wrapper .option_link:hover{
     color: #9fe02e;
@@ -281,7 +287,7 @@ height: fit-content;
 .user_sidemenu_wrapper .option_link > a{
     font-weight: 500;
 }
-.user_sidemenu_wrapper .signout > a{
+.user_sidemenu_wrapper .signout > a , .user_sidemenu_wrapper .signout > span{
     font-size: 20px;
     cursor: pointer;
     color: red !important;
@@ -339,7 +345,6 @@ height: fit-content;
 .store_container > .store_details{
     display: flex;
     flex-direction: column;
-    gap: 5px;
 }
 .store_container > .store_icon{
     font-size: 20px;
@@ -370,7 +375,6 @@ height: fit-content;
 .categories_group > .categories{
     display: flex;
     flex-direction: column;
-    gap: 10px;
 }
 .categories_group > .categories > li{
     font-size: 20px;
@@ -392,6 +396,7 @@ height: fit-content;
     justify-content: space-between;
     width: 100%;
     align-items: center;
+    font-size: medium;
 }
 .categories_group > .categories > li > a:hover{
     color: black;
@@ -417,7 +422,6 @@ height: fit-content;
 .Sub_categories{
     display: flex;
     flex-direction: column;
-    gap: 10px;
     padding: 1rem;
 }
 .Sub_categories > .sub_category_link{
@@ -426,6 +430,7 @@ height: fit-content;
     color: black;
     text-decoration: none;
     padding: 10px;
+    font-size: medium;
 }
 .Sub_categories > .sub_category_link:hover{
     background-color: #dcdcdc;
@@ -438,6 +443,10 @@ height: fit-content;
 }
 .sidemenu_overlay h2{
     padding: 1rem;
+    font-weight: 700;
+}
+.categories_group h2{
+    font-weight: 700;
 }
 .categories__div {
     display: flex;
@@ -453,6 +462,7 @@ height: fit-content;
     padding: 10px;
     color: #333;
     text-decoration: none;
+    font-size: medium;
 }
 
 .category__div .sub-menu {
@@ -531,13 +541,13 @@ height: fit-content;
     }
     .header__categories{
         width: 100vw;
-        top: 70px;
+        top: 86px;
     }
     .category__div a{
         width: max-content;
     }
     .header__div{
-        height: 120px;
+        height: 134px;
     }
     .header__navbar{
         width: 100vw;
@@ -559,6 +569,9 @@ height: fit-content;
     position: absolute;
     top: -8px;
     width: 0;
+}
+.mobile-cart-items-count{
+    display: none;
 }
 @media screen and (max-width: 768px) {
     .container{
@@ -582,6 +595,26 @@ height: fit-content;
     .sidemenu_overlay{
         width: 100%;
     }
+    .mobile-cart{
+        position: relative;
+    }
+    .cart-items-count{
+        display: none;
+    }
+    .mobile-cart-items-count{
+        background: var(--MS-C);
+        font-size: 13px;
+        border-radius: 50%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 15px;
+        height: 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
     
 }
 
@@ -656,13 +689,14 @@ height: fit-content;
 }
 .see_all > a{
     text-decoration: underline;
+    font-size: medium;
 }
 .navbar__search{
     position: relative;
 }
 #searchResult{
     position: absolute;
-    top: 73%;
+    top: 100%;
     width: -webkit-fill-available;
     background-color: #f2f4f7;
     border-top: 1px solid #e0e0e0;
@@ -707,9 +741,11 @@ height: fit-content;
 }
 .track_details > p {
     display: block;
-    font-size: 16px;
+    font-size: medium;
     font-weight: 700;
     padding: 0 15px 0 0;
+    margin: 0;
+    color: var(--MP-C);
 }
 .track_icon{
     font-size: 20px;
