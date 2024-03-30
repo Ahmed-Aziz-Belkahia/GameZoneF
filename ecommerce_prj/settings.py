@@ -437,7 +437,7 @@ CKEDITOR_5_CONFIGS = {
 
 JAZZMIN_SETTINGS = {
     'site_header': "GameZone",
-    'site_brand': "Your #1 marketplace for collectibles.",
+    'site_brand': "Your #1 marketplace for gaming.",
     'site_logo': "images/logo.png",
     'copyright':  "All Right Reserved 2023",
     # "order_with_respect_to": ["store", 'vendor', "addons" , 'core' ,'userauths'],
