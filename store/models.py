@@ -144,7 +144,7 @@ PAYMENT_METHOD = (
 class Category(models.Model):
     cid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmnopqrstuvxyz")
     title = models.CharField(max_length=100)
-    meta_title = models.SlugField(null=True, blank=True)
+    meta_title = models.SlugField(unique=True, null=True, blank=True)
     image = models.ImageField(upload_to="category", default="category.png", null=True, blank=True)
     active = models.BooleanField(default=True)
 
@@ -174,7 +174,7 @@ class SubCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name='subcategories')
     parent_subcategory = models.ForeignKey('self', null=True, blank=True, related_name='child_subcategories', on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
-    meta_title = models.SlugField(null=True, blank=True)
+    meta_title = models.SlugField(unique=True, null=True, blank=True)
     image = models.ImageField(upload_to="sub_category", default="sub_category.png", null=True, blank=True)
 
     class Meta:
@@ -249,7 +249,7 @@ class SubCategory(models.Model):
 class Genre(models.Model):
     cid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmnopqrstuvxyz")
     title = models.CharField(max_length=100)
-    meta_title = models.SlugField(null=True, blank=True)
+    meta_title = models.SlugField(unique=True, null=True, blank=True)
     image = models.ImageField(upload_to="genre", default="genre.png", null=True, blank=True)
     featured = models.BooleanField(default=False)
     featured_image = models.ImageField(upload_to="featured genre", default="featured genre.png", null=True, blank=True)
@@ -280,7 +280,7 @@ class Genre(models.Model):
 class Brand(models.Model):
     bid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmnopqrstuvxyz")
     title = models.CharField(max_length=100)
-    meta_title = models.SlugField(null=True, blank=True)
+    meta_title = models.SlugField(unique=True, null=True, blank=True)
     image = models.ImageField(upload_to="brand", default="brand.png", null=True, blank=True)
     featured = models.BooleanField(default=False)
     active = models.BooleanField(default=True)
@@ -306,8 +306,8 @@ class Brand(models.Model):
 class Type(models.Model):
     tid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmnopqrstuvxyz")
     product = models.ForeignKey("Product", on_delete=models.SET_NULL, blank=True, null=True, related_name="product_types")
-    title = models.CharField(max_length=150, unique=True, null=True)
-    meta_title = models.SlugField(null=True, blank=True)
+    title = models.CharField(max_length=150, null=True)
+    meta_title = models.SlugField(unique=True, null=True, blank=True)
     date = models.DateTimeField(auto_now_add=True, null=True, blank=True) 
 
     """ class Meta:
@@ -330,7 +330,7 @@ class Type(models.Model):
 class Choice(models.Model):
     type = models.ForeignKey(Type, on_delete=models.CASCADE, related_name='choices')
     title = models.CharField(max_length=150, blank=True, null=True)
-    meta_title = models.SlugField(null=True, blank=True)
+    meta_title = models.SlugField(unique=True, null=True, blank=True)
     image = models.ImageField(upload_to="choice", default='choice.png', blank=True, null=True)
 
     def save(self, *args, **kwargs):
@@ -354,15 +354,18 @@ class Product(models.Model):
     #types = models.ManyToManyField(Type, blank=True, related_name='products')
 
     title = models.CharField(max_length=100)
-    meta_title = models.SlugField(null=True, blank=True)
+    meta_title = models.SlugField(unique=True, null=True, blank=True)
 
     image = models.ImageField(upload_to=user_directory_path, default="product.png")
     description = CKEditor5Field(config_name='extends', null=True, blank=True)
+    meta_title = CKEditor5Field(config_name='extends', null=True, blank=True)
 
     price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, null=True, blank=True)
     old_price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, null=True, blank=True)
     
     shipping_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+
+    gz_coins = models.IntegerField(default=0, null=True, blank=True)
 
     show_old_price = models.BooleanField(default=True)
     tags = TaggableManager(blank=True)
@@ -673,6 +676,7 @@ class Review(models.Model):
 class CallToActionBanner(models.Model):
     cid = ShortUUIDField(unique=True, length=10, max_length=20, alphabet="abcdefghijklmnopqrstuvxyz")
     banner = models.ImageField(upload_to="cta banner", default="cta banner.png")
+    banner_mobile = models.ImageField(upload_to="cta banner", default="cta monile banner.png")
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, blank=True, null=True, related_name="CTA_Banners")
     CTA_type = models.CharField(max_length=100, choices=CTA_TYPES)
     active = models.BooleanField(default=True)

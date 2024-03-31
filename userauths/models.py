@@ -29,6 +29,7 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=100, null=True, blank=True)
     full_name = models.CharField(max_length=100, null=True, blank=True)
+    gz_coins = models.IntegerField(default=0, null=True, blank=True)
     bio = models.CharField(max_length=100, null=True, blank=True)
     roles = models.CharField(max_length=100, null=True, blank=True)
     total_spent = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
