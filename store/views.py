@@ -198,6 +198,72 @@ def nav_search(request):
     
     return JsonResponse({'success': True, 'queryList': []})
 
+def shop(request):
+    products = Product.objects.filter(status="published").order_by("-id")
+    filtered_products = products
+    products_count = products.count()
+    top_selling = Product.objects.filter(status="published").order_by("-orders")[:20]
+    query_params = request.GET
+
+    # Get all categories and brands associated with the products
+    categories = Category.objects.filter(products__in=products).distinct()
+    brands = Brand.objects.filter(product_brand__in=products).distinct()
+
+    # Filter products by price range
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+    if not min_price:
+        min_price = filtered_products.aggregate(min_price=Min('price'))['min_price']
+
+    if not max_price:
+        max_price = filtered_products.aggregate(max_price=Max('price'))['max_price']
+
+    if min_price and max_price:
+        filtered_products = filtered_products.filter(price__range=(min_price, max_price))
+    
+    # Filter products by selected categories
+    selected_categories = request.GET.getlist('categories')
+    if selected_categories:
+        filtered_products = filtered_products.filter(category__meta_title__in=selected_categories)
+
+    # Filter products by selected brands
+    selected_brands = request.GET.getlist('brands')
+    if selected_brands:
+        filtered_products = filtered_products.filter(brand__meta_title__in=selected_brands)
+
+    # Step 1: Get all reviews from products
+    all_reviews = Review.objects.filter(product__in=products)
+    
+    # Step 2: Extract the ratings from these reviews
+    all_ratings = [review.rating for review in all_reviews]
+    
+    # Step 3: Remove duplicate ratings
+    unique_ratings = sorted(set(all_ratings))
+    
+    # Filter products by selected ratings
+    selected_ratings = request.GET.getlist('ratings')
+    if selected_ratings:
+        filtered_products = filtered_products.filter(reviews__rating__in=selected_ratings).distinct()
+
+    # Paginate the filtered products
+    paginator = Paginator(filtered_products, 16)
+    page_number = request.GET.get('page')
+    pages_filtered_products = paginator.get_page(page_number)
+
+    context = {
+        "shop_categories": categories,
+        "brands": brands,
+        "products_count": products_count,
+        "products": pages_filtered_products,
+        "top_selling": top_selling,
+        "min_price": min_price,
+        "max_price": max_price,
+        'all_ratings': [(rating, '★' * rating + '☆' * (5 - rating)) for rating in unique_ratings],
+        'selected_categories': selected_categories,
+        'selected_brands': selected_brands,
+        'selected_ratings': selected_ratings,
+    }
+    return render(request, "store/shop.html", context)
 
 def category_shop(request, meta_title):
     brands = Brand.objects.filter(active=True)
@@ -269,7 +335,7 @@ def category_shop(request, meta_title):
         'selected_brands': selected_brands,
     }
     if products:
-        return render(request, "store/shop.html", context)
+        return render(request, "store/category_shop.html", context)
     else:
        return redirect(reverse("store:home"))
 
@@ -344,7 +410,7 @@ def brand_shop(request, meta_title):
         'selected_subcategories': selected_subcategories,
     }
     if products:
-        return render(request, "store/brands_shop.html", context)
+        return render(request, "store/brand_shop.html", context)
     else:
        return redirect(reverse("store:home"))
 

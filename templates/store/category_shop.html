@@ -15,13 +15,13 @@
     <div class="filter-options">
       <form method="GET">
           <!-- Filter by brands -->
-          <h3>Categories</h3>
+          <h3>Brands</h3>
           <ul>
-              {% for category in shop_categories %}
+              {% for brand in brands %}
                   <li>
                       <label>
-                          <input type="checkbox" name="categorys" value="{{ category.meta_title }}">
-                          {{ category.title }}
+                          <input type="checkbox" name="brands" value="{{ brand.meta_title }}">
+                          {{ brand.title }}
                       </label>
                   </li>
               {% endfor %}

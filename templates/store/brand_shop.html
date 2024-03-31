@@ -1,0 +1,137 @@
+{% extends "partials/base.html" %}
+{% load static %}
+
+{% block title %}
+    Shop
+{% endblock title %}
+    
+{% block content %}
+<style>
+    ul,li{
+       list-style: none;
+    }
+ </style>
+    <!-- Listing Grid View -->
+    <div class="filter-options">
+      <form method="GET">
+          <!-- Filter by categories -->
+          <h3>Categories</h3>
+          <ul>
+              {% for category in shop_categories %}
+                  <li>
+                      <label>
+                          <input type="checkbox" name="categorys" value="{{ category.meta_title }}">
+                          {{ category.title }}
+                      </label>
+                  </li>
+              {% endfor %}
+          </ul>
+          
+          <!-- Filter by direct subcategories -->
+          <h3>Direct Subcategories</h3>
+          <ul>
+              {% for subcategory in direct_subcategories %}
+                  <li>
+                      <label>
+                          <input type="checkbox" name="subcategories" value="{{ subcategory.meta_title }}">
+                          {{ subcategory.title }}
+                      </label>
+                  </li>
+              {% endfor %}
+          </ul>
+          
+          <!-- Filter by rating -->
+          <h3>Ratings</h3>
+          <ul>
+              {% for rating_choice in all_ratings %}
+                  <li>
+                      <label>
+                          <input type="checkbox" name="ratings" value="{{ rating_choice.0 }}">
+                          {{ rating_choice.1 }}
+                      </label>
+                  </li>
+              {% endfor %}
+          </ul>
+          
+          <!-- Price range filter -->
+          <h3>Price Range</h3>
+          <label for="min_price">Min Price:</label>
+          <input type="number" name="min_price" id="min_price" value="{{ min_price }}">
+          
+          <label for="max_price">Max Price:</label>
+          <input type="number" name="max_price" id="max_price" value="{{ max_price }}">
+          
+          <button type="submit">Apply Filters</button>
+      </form>
+  </div>
+  </div>
+
+    <section class="deliver-divider pb70">
+      <div class="container">
+          <div class="row">
+              <div class="col-lg-10">
+              <div class="main-title text-center text-sm-start mb80-520 mb25-414">
+                  <h2 class="title">Top Selling Products</h2>
+              </div>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-lg-12">
+                <div class="shop_item_4grid_slider dots_none owl-theme owl-carousel">
+                  {% for p in top_selling %}
+                    {% include 'store/product_list.html' %}
+                  {% endfor %}
+              </div>
+              </div>
+          </div>
+          
+      </div>
+  </section>
+    <section class="our-listing pt0">
+      <div class="container">
+        
+        
+        
+        <div class="row mt60">
+          <div class="col-lg-12 col-xl-12 pl50 pl15-md">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="main-title bfb1 pb10">
+                  <h2 class="title">All Products</h2>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="row">
+                {% for p in products %}
+                  <div class="col-sm-6 col-lg-3 col-xl-3 p0 pl15-520 mb3">
+                    {% include 'store/product_list.html' %}
+                  </div>
+                {% endfor %}
+              </div>
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="mbp_pagination mt30 text-center">
+                    <ul class="page_navigation">
+                        {% if products.has_previous %}
+                          <li class="page-item">
+                          <a class="page-link" href="{% url 'store:shop' %}?page={{products.previous_page_number}}" tabindex="-1" aria-disabled="true"> <span class="fas fa-angle-left"></span></a>
+                          </li>
+                      {% endif %}
+                      
+                      {% if products.has_next %}
+                          <li class="page-item">
+                          <a class="page-link" href="{% url 'store:shop' %}?page={{products.next_page_number}}"><span class="fas fa-angle-right"></span></a>
+                          </li>
+                      {% endif %}
+                      </ul>
+                    <p class="mt20 pagination_page_count text-center">{{products}} -- {{products_couunt.count}} Products found</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    {% endblock content %}

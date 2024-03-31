@@ -8,13 +8,13 @@
 
         <div class="broweByCategory__categorys flexCenter">
             {% for category in categories %}
-            <a href="/catalog/{{ category.meta_title }}" class="categorys__category flexCenter">
+            <a href="/shop/category/{{ category.meta_title }}" class="categorys__category flexCenter">
                 <div class="category__img flexCenter">
                     <div class="img__div flexCenter">
                         <img src="{{ category.image.url }}" alt="{{ category.title }}">
                     </div>
                 </div>
-                <div class="category__title flexCenter">{{ category.product_count }} products</div>
+                {% comment %} <div class="category__title flexCenter">{{ category.product_count }} products</div> {% endcomment %}
                 <div class="category__title flexCenter">{{ category.title }}</div>
             </a>
             {% endfor %}
