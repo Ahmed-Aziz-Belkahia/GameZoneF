@@ -25,8 +25,10 @@ Cart
 
     table tr {
       border-bottom: 3px solid #ddd;
-      display: block;
       margin-bottom: 0.625em;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
     }
 
     table td,
@@ -47,7 +49,81 @@ Cart
     table td:last-child {
       border-bottom: 0;
     }
+    .colors__divs{
+      flex-direction: column;
+    }
   }
+  .colors__divs {
+    /* width: 100%; */
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 0;
+    justify-content: space-evenly;
+  }
+  .divs__div.color {
+    position: relative;
+    overflow: hidden;
+    align-items: self-start;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    background-color: transparent;
+    border: 2px solid gray;
+    border-radius: 8px;
+    cursor: pointer;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    gap: 4px;
+    outline: none;
+    width: -webkit-fill-available;
+  }
+  .shipping_option_container {
+    padding: 1rem;
+    width: -webkit-fill-available;
+}
+.shipping_option_container p {
+  font-size: .8125rem;
+  font-weight: 400;
+  line-height: 1.1;
+  margin: 0;
+  padding: 1rem 0 0;
+  text-align: left;
+  color: gray;
+}
+.divs__div.color.selected {
+  border-color: var(--MS-C);
+  border-width: 2px;
+}
+.lucide-truck, .lucide-store{
+  width: fit-content;
+}
+.shipping_text{
+  width: fit-content;
+    font-weight: 900;
+    font-size: large;
+    font-style: italic;
+    color: black;
+}
+@media screen and (max-width: 768px){
+  table tr {
+    border-bottom: 3px solid #ddd;
+    margin-bottom: 0.625em;
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    align-items: center;
+  }
+  .shopping_cart_table .table tbody.table_body tr th, .shopping_cart_table .table tbody.table_body tr td{
+    padding: 0;
+  }
+  
+}
+.purple-btn{
+  color: white !important;
+}
 </style>
 <div class="body_content_wrapper position-relative" id="cartList">
   <!-- Inner Page Breadcrumb -->
@@ -88,7 +164,7 @@ Cart
           your cart
         </p>
 
-        <div class="col-lg-8 col-xl-9">
+        <div class="col-lg-8 col-xl-8">
           <div class="shopping_cart_table table-responsive">
             <table class="table table-borderless">
               <thead>
@@ -216,9 +292,38 @@ Cart
             </table>
           </div>
         </div>
-        <div class="col-lg-4 col-xl-3">
+        <div class="col-lg-4 col-xl-4">
           <div class="order_sidebar_widget style2">
             <h4 class="title">Cart Totals</h4>
+            <form id="shippingForm" method="POST" action="">
+              <p class="shipping_title"></p>
+              <div class="colors__divs">
+                  <div class="divs__div color flexCenter pick_up_in_store">
+                      <div class="shipping_option_container">
+                          <div class="row justify-content-between">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-store"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"></path><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"></path><path d="M2 7h20"></path><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7"></path></svg>
+                            <span class="shipping_text">Free</span>
+                          </div>
+                          <p>Pick up in store</p>
+                          <p>Available in working time</p>
+                      </div>
+                  </div>
+          
+                  <div class="divs__div color flexCenter ship_to_home selected">
+
+                      <div class="shipping_option_container">
+                          <div class="row justify-content-between">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle></svg>
+                            <span class="shipping_text">7.00 DT</span>
+                          </div>
+                          <p>Ship to home</p>
+                          <p>1-2 day shipping</p>
+                      </div>
+                  </div>
+              </div>
+              <input type="hidden" id="selectedColorInput" name="selected_color" value="1">
+          </form>
+              
             <ul>
               <li class="subtitle">
                 <p>
@@ -320,6 +425,41 @@ Cart
       $("#qty" + id).val(1);
     }
   });
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const shippingOptions = document.querySelectorAll('.colors__divs .divs__div');
+
+    shippingOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            // Remove 'selected' class from all options
+            shippingOptions.forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            // Add 'selected' class to the clicked option
+            option.classList.add('selected');
+
+            // Set the value of the hidden input based on the selected option
+            document.getElementById('selectedColorInput').value = option.classList.contains('pick_up_in_store') ? "0" : "1";
+
+            // Update selected shipping method
+            const selectedShippingMethod = document.getElementById('selectedColorInput').value;
+            console.log('Selected Shipping Method:', selectedShippingMethod);
+
+            // Call a function to reload prices based on the selected method
+            reloadPrices(selectedShippingMethod);
+        });
+    });
+
+    // Simulate click event on default shipping option (ship to home)
+    document.querySelector('.ship_to_home').click(); // Assuming ship_to_home has the 'selected' class by default
+});
+
+function reloadPrices(selectedShippingMethod) {
+    // This is a placeholder function, you should replace this with your actual logic
+    console.log('Reloading prices for shipping method:', selectedShippingMethod);
+    // Update prices based on selectedShippingMethod
+}
+        
 </script>
 
 {% endblock content %}

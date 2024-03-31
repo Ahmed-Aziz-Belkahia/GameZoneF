@@ -14,6 +14,46 @@
   li {
     list-style: none;
   }
+  .form-label{
+    font-size: medium;
+  }
+  .font-medium{
+    font-size: medium;
+  }
+  .subtitle .form-check-input:checked {
+    background-color: #94d92f;
+    border-color: #86bc42;
+}
+.subtitle .form-check-input:focus{
+  box-shadow: 0 0 0 0.25rem rgb(13 253 60 / 24%);
+}
+.subtitle label{
+  font-weight: 500;
+  color: #000;
+  cursor: pointer;
+}
+.subtitle > div{
+  cursor: pointer;
+}
+.payment-methods li {
+  cursor: pointer;
+  padding: 10px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.payment-methods li:hover {
+  background-color: #f0f0f0;
+}
+.payment-methods li.selected {
+  background-color: #94d92f;
+  border: 2px solid #94d92f;
+  border-radius: 10px;
+  color: white;
+}
+.payment-methods li.selected label{
+  color: white;
+}
 </style>
 <div class="body_content_wrapper position-relative" style="margin-top: 30px">
   <!-- Inner Page Breadcrumb -->
@@ -117,8 +157,8 @@
                   </div>
                 </div> -->
                 <div class="col-sm-12">
-                  <div class="form-group mb-3">
-                    <label class="form-check-label" for="efwefwe"
+                  <div class="form-group mb-3 d-flex align-items-center gap-2">
+                    <label class="form-check-label font-medium" for="efwefwe"
                       >Is shipping address same as billing address</label
                     >
                     <input
@@ -170,7 +210,7 @@
                 </button>
                 {% endif %}
               </div>
-              <a href="{% url 'store:cart-view' %}" class="dashed-custom"
+              <a href="{% url 'store:cart-view' %}" class="dashed-custom mt-3 font-medium"
                 >Return to cart</a
               >
             </form>
@@ -235,6 +275,31 @@
               </li>
             </ul>
           </div>
+          <div class="order_sidebar_widget style2 mt-3">
+            <h4 class="title">Payment Method</h4>
+            <ul class="payment-methods">
+              <li class="subtitle" data-value="option1">
+                <div class=" form-check-inline d-flex align-items-center gap-2">
+                  <label class="form-check form-check-label font-medium d-flex align-items-center gap-2" for="payment_method1">
+                    <i class="fa-solid fa-credit-card"></i>
+                     Credit Card
+                  </label>
+                </div>
+              </li>
+              <li class="subtitle" data-value="option2">
+                <div class="form-check-inline d-flex align-items-center gap-2">
+                  <label class="form-check form-check-label font-medium d-flex align-items-center gap-2" for="payment_method2">
+                    <i class="fa-solid fa-truck-ramp-box"></i>
+                     Cash on Delivery
+                  </label>
+                </div>
+              </li>
+            </ul>
+            
+            
+          </div>
+                  
+              
         </div>
       </div>
     </div>
@@ -253,6 +318,32 @@
       actions.attr("hidden", checkboxes.is(":checked"));
     });
   });
+  document.addEventListener("DOMContentLoaded", function() {
+    const paymentMethods = document.querySelectorAll('.payment-methods li');
+  
+    paymentMethods.forEach(method => {
+      method.addEventListener('click', () => {
+        // Remove all other selected classes
+        paymentMethods.forEach(m => {
+          m.classList.remove('selected');
+        });
+        // Add selected class to clicked method
+        method.classList.add('selected');
+  
+        // Get and display selected payment method value
+        const selectedMethod = method.getAttribute('data-value');
+        console.log('Selected Payment Method:', selectedMethod);
+      });
+    });
+  
+    // Simulate click event on default selected method
+    const defaultMethod = document.querySelector('.payment-methods li.selected');
+    if (defaultMethod) {
+      defaultMethod.click();
+    }
+  });
+  
+  
 </script>
 
 {% endblock content %}

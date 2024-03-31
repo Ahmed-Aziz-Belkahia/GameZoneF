@@ -10,9 +10,131 @@
     ul,li{
        list-style: none;
     }
+    .filter__div{
+      flex-direction: row;
+      display: flex;
+      gap: 20px;
+      padding: 100px 0;
+  }
+  .filter__button{
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      fill: #000;
+      align-items: center;
+      background: #e5e5e5;
+      border: 2px solid #e5e5e5;
+      border-radius: 8px;
+      color: #000;
+      cursor: pointer;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-wrap: nowrap;
+      flex-wrap: nowrap;
+      font-size: medium;
+      font-weight: 600;
+      gap: 4px;
+      height: 42px;
+      padding: 0 2rem;
+      position: relative;
+      text-align: left;
+      text-decoration: none;
+      text-transform: none !important;
+      -webkit-transition: all .25s ease-in-out;
+      transition: all .25s ease-in-out;
+  }
+  .filter-options{
+    display: none;
+    position: fixed;
+    background: white;
+    color: black;
+    width: 340px;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 2000;
+    box-shadow: 0 0.5rem 20rem 2000px rgba(0,0,0,.5);
+    max-height: 100vh;
+    overflow-y: scroll;
+  }
+  .catalog_header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 1rem;
+    box-shadow: 0 2px 16px rgba(0,0,0,.078);
+  }
+  .catalog_header > h3{
+    font-weight: 700;
+  }
+  .catalog_header button {
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background: transparent;
+    border: none;
+    padding: 1rem;
+    cursor: pointer;
+    font-size: medium;
+  }
+  .filter-options > form{
+    padding: 1rem;
+  }
+  form > h3{
+    font-weight: 500;
+    font-size: medium;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    background: 0 0;
+    border-bottom: 0;
+    border-radius: 0;
+    border-top: 1px solid #d2d2d2;
+    color: #282828;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    font-size: 1rem;
+    font-weight: 700;
+    justify-content: space-between;
+    line-height: 19px;
+    margin: 0;
+    padding: 12px 0 16px;
+    text-transform: capitalize;
+  }
+  label{
+    display: flex;
+    gap: 5px;
+    font-size: medium;
+    font-weight: 500;
+  }
+  .apply_btn{
+    width: 100;
+  }
+  #min_price , #max_price{
+    width: 100%;
+    padding: 5px;
+    border-radius: 4px;
+    font-size: medium;
+    font-weight: 500;
+  }
+  .deliver-divider{
+    padding: 0;
+    padding-bottom: 70px;
+  }
  </style>
     <!-- Listing Grid View -->
     <div class="filter-options">
+      <div class="catalog_header">
+        <h3 class="mb-0 d-flex align-items-center">Filter Menu</h3>
+        <button type="button" class="toggleFilters">
+            <i class="fa-solid fa-xmark closefilter"></i>
+        </button>
+    </div>
       <form method="GET">
           <!-- Filter by brands -->
           <h3>Brands</h3>
@@ -61,10 +183,21 @@
           <label for="max_price">Max Price:</label>
           <input type="number" name="max_price" id="max_price" value="{{ max_price }}">
           
-          <button type="submit">Apply Filters</button>
+          <button type="submit" class="btn btn-tfhm button-add-to-cart add-to-cart-btn purple-btn mt-2 w-100">Apply Filters</button>
       </form>
   </div>
-  </div>
+  <div class="filter__div container">
+    <button class="filter__button"><i class="fa-solid fa-filter" aria-hidden="true"></i>Filter</button>
+    <div class="filter_box">
+        <button id="sortButton" class="filter__button sort__button"><i class="fa-solid fa-sort" aria-hidden="true"></i> Sort</button>
+        <div class="dropdown-menu sort-dropdown-menu show" aria-labelledby="sortby-dropdown" style="display:none;">
+            <span class="sort-by-up-arrow"></span>
+            <a class="dropdown-item price-low-to-high" data-id="price-low-to-high">Price Low To High</a>
+            <a class="dropdown-item price-high-to-low" data-id="price-high-to-low">Price High to Low</a>
+            
+        </div>
+    </div>
+</div>
 
     <section class="deliver-divider pb70">
       <div class="container">
@@ -134,4 +267,35 @@
         </div>
       </div>
     </section>
+
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const filters = document.querySelector(".filter__button"); // Added "." for class selector
+        const menu = document.querySelector(".filter-options"); // Added "." for class selector
+        const body = document.querySelector("body");
+        const closefilter = document.querySelector(".closefilter");
+
+        // Toggle menu when button is clicked
+        filters.addEventListener("click", function() {
+            menu.style.display = (menu.style.display === "none" || menu.style.display === "") ? "block" : "none";
+            body.style.overflowY = menu.style.display === "none" ? "auto" : "hidden";
+        });
+    
+        closefilter.addEventListener("click", function() {
+            menu.style.display = "none";
+            body.style.overflowY = "auto";
+        });
+
+        // Close menu when clicking outside of it
+        document.addEventListener("click", function(event) {
+            if (!menu.contains(event.target) && !filters.contains(event.target)) {
+                menu.style.display = "none";
+                body.style.overflowY = "auto";
+            }
+        });
+    });
+    </script>
     {% endblock content %}
+
+
