@@ -117,7 +117,18 @@
                     <div class="layerCTA__div flexCenter">
 
                         <div class="layerCTA__img">
-                            <img src="{{pre_owned_deals_banner.banner.url}}" alt="{{pre_owned_deals_banner.product.title}}">
+{% comment %}                             <img src="{{pre_owned_deals_banner.banner.url}}" alt="{{pre_owned_deals_banner.product.title}}">
+ {% endcomment %}                            
+                            <picture>
+                                <!-- WebP format for screens 768px and above -->
+                                <source media="(min-width: 768px)" type="image/webp" srcset="{{pre_owned_deals_banner.banner.url}}">
+                            
+                                <!-- WebP format for screens below 768px -->
+                                <source type="image/webp" srcset="{{pre_owned_deals_banner.banner_mobile.url}}">
+                            
+                                <!-- Fallback for browsers that do not support <picture> or WebP -->
+                                <img alt="{{pre_owned_deals_banner.product.title}}" class="gme-v3-carousel-hero__img lazyloaded" src="{{pre_owned_deals_banner.banner.url}}" fetchpriority="high">
+                            </picture>
                         </div>
 
                     </div>

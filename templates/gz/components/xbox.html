@@ -17,6 +17,16 @@
                 <a href="/detail/{{nintendo_banner.product.meta_title}}" class="layerCTA__div flexCenter">
                     <div class="layerCTA__img">
                         <img src="{{nintendo_banner.banner.url}}" alt="{{nintendo_banner.product.title}}">
+                        <picture>
+                            <!-- WebP format for screens 768px and above -->
+                            <source media="(min-width: 768px)" type="image/webp" srcset="{{nintendo_banner.banner.url}}">
+                        
+                            <!-- WebP format for screens below 768px -->
+                            <source type="image/webp" srcset="{{nintendo_banner.banner_mobile.url}}">
+                        
+                            <!-- Fallback for browsers that do not support <picture> or WebP -->
+                            <img alt="{{nintendo_banner.product.title}}" class="gme-v3-carousel-hero__img lazyloaded" src="{{nintendo_banner.banner.url}}" fetchpriority="high">
+                        </picture>
                     </div>
                 </a>
             </div>

@@ -60,7 +60,17 @@
                     <div class="layerCTA__div flexCenter">
     
                         <div class="layerCTA__img">
-                            <img src="{{top_deals_banner.banner.url}}" alt="{{top_deals_banner.product.title}}">
+                            {% comment %} <img src="{{top_deals_banner.banner.url}}" alt="{{top_deals_banner.product.title}}"> {% endcomment %}
+                            <picture>
+                                <!-- WebP format for screens 768px and above -->
+                                <source media="(min-width: 768px)" type="image/webp" srcset="{{top_deals_banner.banner.url}}">
+                            
+                                <!-- WebP format for screens below 768px -->
+                                <source type="image/webp" srcset="{% static "assets/promonitandomobile.jpg" %}">
+                            
+                                <!-- Fallback for browsers that do not support <picture> or WebP -->
+                                <img alt="{{top_deals_banner.product.title}}" class="gme-v3-carousel-hero__img lazyloaded" src="{{top_deals_banner.banner.url}}" fetchpriority="high">
+                            </picture>
                         </div>
                     </div>
     

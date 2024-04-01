@@ -273,13 +273,12 @@
   font-size: large;
   color: black;
 }
-.choice-input{
+.choice-input {
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-  border: 1px solid #dbdbdb;
   border-radius: 6px;
   color: #000;
   cursor: pointer;
@@ -290,10 +289,9 @@
   flex-direction: column;
   font-size: .875rem;
   font-weight: 500;
-  padding: .5rem 1.25rem;
   text-align: center;
   text-transform: none;
-  width: auto;
+  width: 120px;
   color: black;
 }
 input[type="radio"]:checked + .choice-input{
@@ -302,6 +300,29 @@ input[type="radio"]:checked + .choice-input{
 }
 .choice_input_label{
   padding: 0 1rem;
+}
+.choice-input.clicked {
+  border: 2px solid #94d92f;
+}
+.choice {
+  cursor: pointer;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: medium;
+  font-weight: 400;
+  width: 6rem;
+  text-align: center;
+  color: black;
+}
+.choice.selected {
+  background-color: #94d92f;
+  font-weight: 500;
+  color: white;
+}
+.choice-input img{
+  width: 60%;
+  margin: 0 auto;
 }
 </style>
   
@@ -445,10 +466,20 @@ input[type="radio"]:checked + .choice-input{
                   <div class="prop-title">{{type.title}}:</div>
                   <div class="d-flex align-items-center gap-3">
                     {% for choice in type.choices.all %}
-                    <div class="choice-input">
-                      <input type="radio" id="{{ type.title }}_{{ choice.title }}" name="{{ type.title }}" value="{{ choice.title }}"
-                             {% if forloop.first %} checked {% endif %}>
-                      <label for="{{ type.title }}_{{ choice.title }}" class="choice_input_label">{{ choice.title }}</label>
+                    <div class="choice" data-choice="{{ choice.title }}">
+                        {{ choice.title }}
+                    </div>
+                    {% endfor %}
+                </div>
+                  <div class="d-flex align-items-center gap-3">
+                    {% for choice in type.choices.all %}
+                    <div class="choice-input" data-choice="{{ choice.title }}">
+                        <div class="choice-content">
+                            {% comment %} <img src="{{ choice.image.url }}" alt="{{ choice.title }}" class="choice_image"> {% endcomment %} <!-- Assuming choice has an ImageField -->
+                            <img src="http://127.0.0.1:8000/media/user_1/1_1AbyXTx.jpg" alt="{{ choice.title }}" class="choice_image"> <!-- Assuming choice has an ImageField -->
+
+                            <span>{{ choice.title }}</span>
+                        </div>
                     </div>
                     {% endfor %}
                   </div>
@@ -1639,4 +1670,43 @@ input[type="radio"]:checked + .choice-input{
     $("#clipboard").text("URL copied!");
   })
 </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      const choiceInputs = document.querySelectorAll('.choice-input');
+  
+      choiceInputs.forEach(function(choiceInput) {
+          choiceInput.addEventListener('click', function() {
+              // Remove 'clicked' class from all choices
+              choiceInputs.forEach(function(input) {
+                  input.classList.remove('clicked');
+              });
+  
+              // Add 'clicked' class to the clicked choice
+              this.classList.add('clicked');
+  
+              const selectedChoice = this.getAttribute('data-choice');
+              console.log('Selected choice:', selectedChoice);
+          });
+      });
+  });
+  document.addEventListener("DOMContentLoaded", function() {
+    const choices = document.querySelectorAll('.choice');
+
+    choices.forEach(function(choice) {
+        choice.addEventListener('click', function() {
+            // Remove 'selected' class from all choices
+            choices.forEach(function(c) {
+                c.classList.remove('selected');
+            });
+
+            // Add 'selected' class to the clicked choice
+            this.classList.add('selected');
+
+            const selectedChoice = this.getAttribute('data-choice');
+            console.log('Selected choice:', selectedChoice);
+        });
+    });
+});
+  </script>
 {% endblock content %}
