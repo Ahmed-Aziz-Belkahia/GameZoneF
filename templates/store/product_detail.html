@@ -435,7 +435,7 @@ input[type="radio"]:checked + .choice-input{
                   
               </small></div>
               <div class="gz-coins">
-               <span> + 320 GZ Coin </span>
+               <span> + {{product.gz_coins}} GZ Coin </span>
               </div>
               <hr>
               <div>
@@ -515,7 +515,7 @@ input[type="radio"]:checked + .choice-input{
                       <th scope="col">Country</th>
                       
                       {% if product.vendor.country == None %}
-                      <th><small>Not Available Yet...</small></th>
+                      <th><small>Tunisia</small></th>
                       {% else %}
                       <th scope="col">{{product.vendor.country}}</th>
                       {% endif %}
@@ -929,6 +929,7 @@ input[type="radio"]:checked + .choice-input{
                   
 
 
+                  <input type="hidden" class="product-gz_coins-{{ product.id }}" value="{{ product.gz_coins }}" />
                   <input type="hidden" class="product-shipping_amount-{{ product.id }}" value="{{ product.shipping_amount }}" />
                   <input type="hidden" class="product-quantity-{{ product.id }}" value="1" id="product-quantity" class="w-25 mb-10 product-quantity-{{ product.id }}" />
                   <input type="hidden" class="product-price-{{ product.id }}" value="{{ product.price }}" />
