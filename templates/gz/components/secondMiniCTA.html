@@ -3,9 +3,19 @@
 
 <div class="main__miniCTA flexCenter">
 
-    <a href="/detail/{{CTA4.product.meta_title}}" class="miniCTA__div">
+    <a href="/detail/{{cta4.product.meta_title}}" class="miniCTA__div">
 
-        <img src="{{CTA4.image.url}}" alt="">
+        <img src="{{cta4.banner.url}}" alt="">
+        <picture>
+            <!-- WebP format for screens 768px and above -->
+            <source media="(min-width: 768px)" type="image/webp" srcset="{{cta4.banner.url}}">
+        
+            <!-- WebP format for screens below 768px -->
+            <source type="image/webp" srcset="{{cta4.banner_mobile.url}}">
+        
+            <!-- Fallback for browsers that do not support <picture> or WebP -->
+            <img alt="" class="gme-v3-carousel-hero__img lazyloaded" src="{{cta4.banner.url}}" fetchpriority="high">
+        </picture>
 
     </a>
 

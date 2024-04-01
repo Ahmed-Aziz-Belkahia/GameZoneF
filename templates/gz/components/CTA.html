@@ -5,7 +5,17 @@
 
     <a href="/detail/{{cta1.product.meta_title}}" class="CTA__div">
 
-        <img src="{{cta1.banner.url}}" alt="{{cta1.product.title}}">
+        {% comment %} <img src="{{cta1.banner.url}}" alt="{{cta1.product.title}}"> {% endcomment %}
+        <picture>
+            <!-- WebP format for screens 768px and above -->
+            <source media="(min-width: 768px)" type="image/webp" srcset="{{cta1.banner.url}}">
+        
+            <!-- WebP format for screens below 768px -->
+            <source type="image/webp" srcset="{{cta1.banner_mobile.url}}">
+        
+            <!-- Fallback for browsers that do not support <picture> or WebP -->
+            <img alt="{{cta1.product.title}}" class="gme-v3-carousel-hero__img lazyloaded" src="{{cta1.banner.url}}" fetchpriority="high">
+        </picture>
 
     </a>
 
