@@ -358,7 +358,7 @@ class Product(models.Model):
 
     image = models.ImageField(upload_to=user_directory_path, default="product.png")
     description = CKEditor5Field(config_name='extends', null=True, blank=True)
-    meta_title = CKEditor5Field(config_name='extends', null=True, blank=True)
+    meta_description = CKEditor5Field(config_name='extends', null=True, blank=True)
 
     price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, null=True, blank=True)
     old_price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, null=True, blank=True)
@@ -539,6 +539,16 @@ class ProductFaq(models.Model):
 
 
 class CartOrder(models.Model):
+
+    SHIPPING_METHOD_CHOICES = (
+        ('ship_to_home', 'Ship to Home'),
+        ('pick_up_in_store', 'Pick Up in Store'),
+    )
+    PAYMENT_METHOD_CHOICES = (
+        ('credit_card', 'Credit Card'),
+        ('cash', 'Cash'),
+    )
+
     vendor = models.ManyToManyField(Vendor, blank=True)
     coupons = models.ManyToManyField(Coupon, blank=True)
     buyer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="buyer", blank=True)
@@ -566,6 +576,10 @@ class CartOrder(models.Model):
     town_city = models.CharField(max_length=1000, null=True, blank=True)
     address = models.CharField(max_length=1000, null=True, blank=True)
     postal_code = models.CharField(max_length=1000, null=True, blank=True)
+
+    shipping_method = models.CharField(max_length=100, choices=SHIPPING_METHOD_CHOICES, default="ship_to_home")
+    payment_method = models.CharField(max_length=100, choices=PAYMENT_METHOD_CHOICES, default="cash")
+
     # End of billing
 
     # Billing
@@ -615,6 +629,7 @@ class CartOrderItem(models.Model):
     invoice_no = models.CharField(max_length=200)
     product = models.CharField(max_length=200)
     product_types_choices = models.JSONField(null=True, blank=True)
+    gz_coins = models.IntegerField(default=0, null=True, blank=True)
     product_obj = models.ForeignKey(Product, on_delete=models.CASCADE)
     image = models.CharField(max_length=200)
     paid = models.BooleanField(default=False)

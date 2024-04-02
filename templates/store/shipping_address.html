@@ -105,7 +105,7 @@
               name="contact_form"
               method="POST"
               style=""
-            >
+              >
               {% csrf_token %}
               <div class="row">
                 <div class="col-sm-12">
@@ -203,6 +203,50 @@
                     </div>
                   </div> -->
                 </div>
+                
+                <h4 class="title">Shipping Method</h4>
+                <ul class="shipping-methods">
+                    <li class="subtitle" data-value="ship_to_home">
+                        <div class="form-check-inline d-flex align-items-center gap-2">
+                            <input type="radio" class="form-check-input" id="shipping_method1" name="shipping_method" value="ship_to_home">
+                            <label class="form-check-label font-medium d-flex align-items-center gap-2" for="shipping_method1">
+                                <i class="fa-solid fa-truck"></i>
+                                Ship to Home
+                            </label>
+                        </div>
+                    </li>
+                    <li class="subtitle" data-value="pick_up_in_store">
+                        <div class="form-check-inline d-flex align-items-center gap-2">
+                            <input type="radio" class="form-check-input" id="shipping_method2" name="shipping_method" value="pick_up_in_store">
+                            <label class="form-check-label font-medium d-flex align-items-center gap-2" for="shipping_method2">
+                                <i class="fa-solid fa-store"></i>
+                                Pick Up in Store
+                            </label>
+                        </div>
+                    </li>
+                </ul>
+                
+                <h4 class="title">Payment Method</h4>
+                <ul class="payment-methods">
+                    <li class="subtitle" data-value="credit_card">
+                        <div class="form-check-inline d-flex align-items-center gap-2">
+                            <input type="radio" class="form-check-input" id="payment_method1" name="payment_method" value="credit_card">
+                            <label class="form-check-label font-medium d-flex align-items-center gap-2" for="payment_method1">
+                                <i class="fa-solid fa-credit-card"></i>
+                                Credit Card
+                            </label>
+                        </div>
+                    </li>
+                    <li class="subtitle" data-value="cash">
+                        <div class="form-check-inline d-flex align-items-center gap-2">
+                            <input type="radio" class="form-check-input" id="payment_method2" name="payment_method" value="cash">
+                            <label class="form-check-label font-medium d-flex align-items-center gap-2" for="payment_method2">
+                                <i class="fa-solid fa-money-bill"></i>
+                                Pay Cash on Delivery
+                            </label>
+                        </div>
+                    </li>
+                </ul>
 
                 {% if totalcartitems %}
                 <button type="submit" class="btn purple-btn btn-block h-10">
@@ -275,7 +319,7 @@
               </li>
             </ul>
           </div>
-          <div class="order_sidebar_widget style2 mt-3">
+          {% comment %} <div class="order_sidebar_widget style2 mt-3">
             <h4 class="title">Payment Method</h4>
             <ul class="payment-methods">
               <li class="subtitle" data-value="option1">
@@ -297,7 +341,7 @@
             </ul>
             
             
-          </div>
+          </div> {% endcomment %}
                   
               
         </div>
@@ -309,41 +353,6 @@
   </div>
 </div>
 
-<script>
-  $(document).ready(function () {
-    var checkboxes = $("input[type='checkbox']"),
-      actions = $("#actions");
-    checkboxes.click(function () {
-      console.log(checkboxes);
-      actions.attr("hidden", checkboxes.is(":checked"));
-    });
-  });
-  document.addEventListener("DOMContentLoaded", function() {
-    const paymentMethods = document.querySelectorAll('.payment-methods li');
-  
-    paymentMethods.forEach(method => {
-      method.addEventListener('click', () => {
-        // Remove all other selected classes
-        paymentMethods.forEach(m => {
-          m.classList.remove('selected');
-        });
-        // Add selected class to clicked method
-        method.classList.add('selected');
-  
-        // Get and display selected payment method value
-        const selectedMethod = method.getAttribute('data-value');
-        console.log('Selected Payment Method:', selectedMethod);
-      });
-    });
-  
-    // Simulate click event on default selected method
-    const defaultMethod = document.querySelector('.payment-methods li.selected');
-    if (defaultMethod) {
-      defaultMethod.click();
-    }
-  });
-  
-  
-</script>
+
 
 {% endblock content %}

@@ -20,7 +20,7 @@ class CustomUserAdmin(UserAdmin):
 class UserAdmin(admin.ModelAdmin):
     search_fields  = ['username', 'email', 'id']
     list_filter = ['roles']
-    list_display = ['username', 'email', 'roles', 'id']
+    list_display = ['username', 'email', 'roles', 'id', 'gz_coins']
     list_per_page = 500
 
 class ProfileAdmin(admin.ModelAdmin):
@@ -28,5 +28,5 @@ class ProfileAdmin(admin.ModelAdmin):
     list_display = ['user', 'full_name', 'profile_image', 'wallet']
     list_per_page = 1000
 
-admin.site.register(User, CustomUserAdmin)
+admin.site.register(User)
 admin.site.register(Profile, ProfileAdmin)

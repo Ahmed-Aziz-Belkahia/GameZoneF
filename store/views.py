@@ -1,3 +1,4 @@
+from django.http import HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404 ,redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
@@ -208,6 +209,10 @@ def shop(request):
     # Get all categories and brands associated with the products
     categories = Category.objects.filter(products__in=products).distinct()
     brands = Brand.objects.filter(product_brand__in=products).distinct()
+    print(categories, "aaaaaaaaaaaaaaaaaaaaa")
+    direct_subcategories = SubCategory.objects.none()
+    for category in categories:
+        direct_subcategories = direct_subcategories.union(category.subcategories.filter(parent_subcategory=None))
 
     # Filter products by price range
     min_price = request.GET.get('min_price')
@@ -251,6 +256,7 @@ def shop(request):
     pages_filtered_products = paginator.get_page(page_number)
 
     context = {
+        "direct_subcategories": direct_subcategories,        
         "shop_categories": categories,
         "brands": brands,
         "products_count": products_count,
@@ -987,7 +993,9 @@ def add_to_cart(request):
         'product_meta_title': request.GET['product_meta_title'],
         'product_types_choices': request.GET['product_types_choices'],
         'shipping_amount': request.GET['shipping_amount'],
+        'shipping_amount': request.GET['shipping_amount'],
         'vendor': request.GET['vendor'],
+        'product_gz_coins': request.GET['product_gz_coins'],
         'product_brand': request.GET['product_brand'],
         'image': request.GET['image'],
         'pid': request.GET['pid'],
@@ -1081,10 +1089,10 @@ def cart_view(request):
         
         for p_id, item in request.session['cart_data_obj'].items():
             cart_total_amount += int(item['qty']) * float(item['price'])
-            total_shipping_amount += int(item['qty']) * float(item['shipping_amount'])
+            total_shipping_amount += 0 #int(item['qty']) * float(item['shipping_amount'])
             total_tax += int(item['qty']) * float(tax_rate)
             products_amount += int(item['qty']) * float(item['price'])
-            shipping_amount__ += int(item['qty']) * float(item['shipping_amount'])
+            shipping_amount__ += 0 #int(item['qty']) * float(item['shipping_amount'])
             product_plus_shipping = products_amount + shipping_amount__
             
             # print("product_plus_shipping ==================", product_plus_shipping)
@@ -1340,10 +1348,10 @@ def shipping_address(request):
         
         for p_id, item in request.session['cart_data_obj'].items():
             cart_total_amount += int(item['qty']) * float(item['price'])
-            total_shipping_amount += int(item['qty']) * float(item['shipping_amount'])
+            total_shipping_amount += 0 #int(item['qty']) * float(item['shipping_amount'])
             total_tax += int(item['qty']) * float(tax_rate)
             products_amount += int(item['qty']) * float(item['price'])
-            shipping_amount__ += int(item['qty']) * float(item['shipping_amount'])
+            shipping_amount__ += 0 #int(item['qty']) * float(item['shipping_amount'])
             product_plus_shipping = products_amount + shipping_amount__
             
             # print("product_plus_shipping ==================", product_plus_shipping)
@@ -1366,7 +1374,7 @@ def shipping_address(request):
             vendor = item['vendor']
 
             # total_amount = cart_total_amount + total_shipping_amount + total_tax + service_fee_amount
-            main_cart_total = cart_total_amount + shipping_amount__
+            #main_cart_total = cart_total_amount + shipping_amount__
             tax_amount_ = main_cart_total * tax_rate
             
             total_amount = cart_total_amount + total_shipping_amount + service_fee_amount + tax_amount_
@@ -1376,7 +1384,10 @@ def shipping_address(request):
         form = CheckoutForm()
         if request.method == 'POST':
             form = CheckoutForm(request.POST)
+            print(request.POST)
             if form.is_valid():
+                print("valid form", form)
+                print("payment_method", request.POST.get("payment_method"))
                 new_form = form.save(commit=False)
                 
                 full_name = new_form.full_name
@@ -1386,13 +1397,20 @@ def shipping_address(request):
                 state = new_form.state
                 town_city = new_form.town_city
                 address = new_form.address
-
+                shipping_method = request.POST.get("shipping_method")
+                payment_method = request.POST.get("payment_method")
                 billing_country = new_form.billing_country
                 billing_state = new_form.billing_state
                 billing_town_city = new_form.billing_town_city
                 billing_address = new_form.billing_address
                 
-                
+                if shipping_method == "ship_to_home":
+                    # Add $7 to the total amount for shipping to home
+                    shipping_amount__ = 7
+                    total_shipping_amount = shipping_amount__
+                    total_amount__ += total_shipping_amount
+
+
                 # tax_rate_fee = TaxRate.objects.filter(country=country)
                 # if tax_rate_fee.exists():
                 #     main_tax_fee = main_cart_total * tax_rate_fee.first().rate / 100
@@ -1403,7 +1421,7 @@ def shipping_address(request):
             
             
             main_tax_fee = main_cart_total * tax_rate
-            total_amount__ = cart_total_amount + shipping_amount__ + main_tax_fee + service_fee_amount
+            total_amount__ = cart_total_amount + total_shipping_amount + main_tax_fee + service_fee_amount
             # print("main_tax_fee ==================", main_tax_fee)
             
 
@@ -1416,6 +1434,8 @@ def shipping_address(request):
                     state=state,
                     town_city=town_city,
                     address=address,
+                    shipping_method=shipping_method,
+                    payment_method=payment_method,
 
                     billing_country=billing_country,
                     billing_state=billing_state,
@@ -1436,21 +1456,22 @@ def shipping_address(request):
                     full_name=full_name,
                     email=email,
                     mobile=mobile,
-                    
                     country=country,
                     state=state,
                     town_city=town_city,
                     address=address,
+                    shipping_method=shipping_method,  # Include shipping_method here
+                    payment_method=payment_method,  # Include payment_method here
 
                     billing_country=billing_country,
                     billing_state=billing_state,
                     billing_town_city=billing_town_city,
                     billing_address=billing_address,
-                    
+
                     price=cart_total_amount, 
-                    buyer=None, 
-                    original_total=total_amount__,
+                    buyer=request.user, 
                     total=total_amount__, 
+                    original_total=total_amount__,
                     shipping=shipping_amount__, 
                     vat=main_tax_fee, 
                     service_fee=service_fee_amount 
@@ -1459,7 +1480,16 @@ def shipping_address(request):
         
             for p_id, item in request.session['cart_data_obj'].items():
                 product = Product.objects.get(id=p_id)
-                
+                print(product.gz_coins)
+                print(request.user.gz_coins)
+                print(item['qty'])
+                print()
+                print(request.user)
+                print(request.user.gz_coins)
+
+                request.user.gz_coins = int(product.gz_coins) * int(item['qty']) + int(request.user.gz_coins)
+                request.user.save()
+
                 cart_total_amount_ += int(item['qty']) * float(item['price'])
                 shipping_amount_ += int(item['qty']) * product.shipping_amount
                 tax_amount += float(item['qty']) * tax_rate
@@ -1503,6 +1533,7 @@ def shipping_address(request):
                     product_obj=product,
                     price=item['price'],
                     shipping=item_shipping,
+                    gz_coins=item['product_gz_coins'],
                     product_types_choices=item['product_types_choices'],
                     paid_vendor=False,
                     original_grand_total=original_grand_total,
@@ -1548,7 +1579,7 @@ def delete_item_from_cart(request):
     cs = basic_addon.currency_sign
     
     try:
-        location_country = request.session['location_country']
+        location_country = "Tunisia"
         tax_country = TaxRate.objects.filter(country=location_country).first()
         tax_rate = tax_country.rate / 100
     except:
@@ -1572,8 +1603,13 @@ def delete_item_from_cart(request):
             tax_amount = total_plus_shipping * tax_rate
 
             total_amount = cart_total_amount + shipping_amount_ + tax_amount + product_processing_fee_
+            
+            # Fetch the product object from the database
+            product = get_object_or_404(Product, pid=item['pid'])
+            # Add meta_title to the item dictionary
+            item['meta_title'] = product.meta_title  # Assuming the meta_title attribute exists on the Product model
 
-    context = render_to_string("store/async/cart-list.html", {"cart_data":request.session['cart_data_obj'], 'totalcartitems': len(request.session['cart_data_obj']), 'cart_total_amount':cart_total_amount, 'total_shipping_amount':shipping_amount_ , 'total_tax':tax_amount, "cs":cs, 'total_amount':total_amount, 'product_processing_fee_':product_processing_fee_, "tax_country":tax_country})
+    context = render_to_string("store/async/cart-list.html", {"cart_data": request.session['cart_data_obj'], 'totalcartitems': len(request.session['cart_data_obj']), 'cart_total_amount': cart_total_amount, 'total_shipping_amount': shipping_amount_, 'total_tax': tax_amount, "cs": cs, 'total_amount': total_amount, 'product_processing_fee_': product_processing_fee_, "tax_country": tax_country})
     return JsonResponse({"data": context, 'totalcartitems': len(request.session['cart_data_obj'])})
 
 def update_cart(request):
@@ -1589,7 +1625,7 @@ def update_cart(request):
     cs = basic_addon.currency_sign
     
     try:
-        location_country = request.session['location_country']
+        location_country = "Tunisia"
         tax_country = TaxRate.objects.filter(country=location_country).first()
         tax_rate = tax_country.rate / 100
     except:
@@ -1602,7 +1638,7 @@ def update_cart(request):
         if product_id in request.session['cart_data_obj']:
             cart_data = request.session['cart_data_obj']
             cart_data[str(request.GET['id'])]['qty'] = product_qty
-            cart_data[str(request.GET['id'])]['shipping_amount'] = shipping_amount
+            cart_data[str(request.GET['id'])]['shipping_amount'] = 0
             cart_data[str(request.GET['id'])]['product_tax_fee'] = product_tax_fee
             cart_data[str(request.GET['id'])]['product_processing_fee'] = product_processing_fee
             request.session['cart_data_obj'] = cart_data
@@ -1617,7 +1653,7 @@ def update_cart(request):
     if 'cart_data_obj' in request.session:
         for p_id, item in request.session['cart_data_obj'].items():
             cart_total_amount += int(item['qty']) * float(item['price'])
-            shipping_amount_ += int(item['qty']) * float(item['shipping_amount'])
+            shipping_amount_ += 0 #int(item['qty']) * float(item['shipping_amount'])
             
             total_plus_shipping = cart_total_amount + shipping_amount_
             
@@ -1634,133 +1670,6 @@ def update_cart(request):
     context = render_to_string("store/async/cart-list.html", {"cart_data":request.session['cart_data_obj'], 'totalcartitems': len(request.session['cart_data_obj']), 'cart_total_amount':cart_total_amount ,  'total_shipping_amount':shipping_amount_ , 'total_tax':tax_amount, "cs":cs, 'total_amount':total_amount, 'product_processing_fee_':product_processing_fee_})
     return JsonResponse({"data": context, 'totalcartitems': len(request.session['cart_data_obj'])})
 
-# def checkout_view(request, oid, *args, **kwargs):
-#     try:
-#         order = CartOrder.objects.get(oid=oid)
-#         if order.payment_status == "paid":
-#             messages.warning(request, "This Order have been paid for.")
-#             return redirect("core:buyer-dashboard")
-        
-#         address = CartOrder.objects.get(oid=oid)
-#         order_items = CartOrderItem.objects.filter(order=order)
-#         # print("order_email =============", order.email)
-#         order.payment_status = "processing"
-#         order.save()
-                
-#         now = timezone.now()
-#         if request.method == "POST":
-#             try:
-#                 if request.user.is_authenticated:
-#                     code = request.POST.get('code')
-#                     coupon = Coupon.objects.get(code__iexact=code,valid_from__lte=now,valid_to__gte=now,active=True)
-                    
-#                     order_items_ = CartOrderItem.objects.filter(vendor=coupon.vendor, order=order)
-                    
-#                     for o in order_items_:
-#                         # if o.applied_coupon == False:
-#                         if not coupon in o.coupon.all():
-
-#                             calc = o.grand_total * coupon.discount / 100
-#                             o.coupon_discount_grand_total = o.grand_total - calc
-#                             coupon.redemption += 1
-                            
-#                             # Order
-#                             order.coupons.add(coupon)
-#                             order.total -= calc
-#                             order.price -= calc
-#                             order.saved += calc
-                            
-#                             # Order Items
-#                             o.coupon.add(coupon)
-#                             o.total_payable -= calc 
-#                             o.grand_total -= calc
-#                             o.saved += calc
-#                             o.applied_coupon = True
-#                             order.save()
-#                             o.save()
-#                             coupon.save()
-#                             print("o.calc ==========", calc)
-#                             print("o.coupon_discount_grand_total ==========", o.coupon_discount_grand_total)
-#                         else:
-#                             messages.warning(request, f"Coupon Already Activated")
-#                             return redirect("store:checkout", order.oid)
-#                     messages.success(request, f"Coupon Found and activated")
-#                     return redirect("store:checkout", order.oid)
-#                 else:
-#                     code = request.POST.get('code')
-#                     coupon = Coupon.objects.get(code__iexact=code,valid_from__lte=now,valid_to__gte=now,active=True)
-                    
-#                     order_items_ = CartOrderItem.objects.filter(vendor=coupon.vendor, order=order)
-#                     for o in order_items_:
-#                         if not coupon in o.coupon.all():
-                            
-#                             calc = o.grand_total * coupon.discount / 100
-#                             o.coupon_discount_grand_total = o.grand_total - calc
-#                             coupon.redemption += 1
-                            
-#                             # Order
-#                             order.coupons.add(coupon)
-#                             order.total -= calc
-#                             order.price -= calc
-#                             order.saved += calc
-                            
-#                             # Order Items
-#                             # o.coupon = coupon
-#                             o.coupon.add(coupon)
-#                             o.total_payable -= calc 
-#                             o.grand_total -= calc
-#                             o.saved += calc
-#                             o.applied_coupon = True
-#                             order.save()
-#                             o.save()
-#                             coupon.save()
-#                             print("o.calc ==========", calc)
-#                             print("o.coupon_discount_grand_total ==========", o.coupon_discount_grand_total)
-#                         else:
-#                             messages.warning(request, f"Coupon Already Activated")
-#                             return redirect("store:checkout", order.oid)
-#                     messages.success(request, f"Coupon Found and activated")
-#                     return redirect("store:checkout", order.oid)
-#             except Coupon.DoesNotExist:
-#                 messages.error(request, f"Coupon Not Found")
-#                 return redirect("store:checkout", order.oid)    
-#         else:
-#             form = CouponApplyForm()
-        
-#         if 'coupon_id' in request.session:
-#             del request.session['coupon_id']
-#             del request.session['coupon_name']
-        
-        
-#         host = request.get_host()
-#         paypal_dict = {
-#             'business': settings.PAYPAL_RECEIVER_EMAIL,
-#             'amount': order.total,
-#             'item_name': "Order-Item-No-" + str(order.id),
-#             'invoice': "INVOICE_NO-" + str(timezone.now()),
-#             'currency_code': "USD",
-#             'notify_url': 'http://{}{}'.format(host, reverse("store:paypal-ipn")),
-#             'return_url': 'http://{}{}'.format(host, reverse("store:payment-completed", kwargs={'oid': order.oid})),
-#             'cancel_url': 'http://{}{}'.format(host, reverse("store:payment-failed")),
-#         }
-        
-#         paypal_payment_button = PayPalPaymentsForm(initial=paypal_dict)
-#     except CartOrder.DoesNotExist:
-#         messages.warning(request, "The order you are trying is access does not exist.")
-#         return redirect("store:home")
-#     context = {
-#         "order":order, 
-#         "address":address, 
-#         "order_items":order_items, 
-#         "paypal_payment_button":paypal_payment_button, 
-#         "stripe_publishable_key":settings.STRIPE_PUBLISHABLE_KEY, 
-#         }
-
-#     return render(request, "store/checkout.html", context)
-
-
-
-
 
 def checkout_view(request, oid, *args, **kwargs):
     try:
@@ -1773,7 +1682,17 @@ def checkout_view(request, oid, *args, **kwargs):
         order_items = CartOrderItem.objects.filter(order=order)
         # print("order_email =============", order.email)
         order.payment_status = "processing"
+        # After the order is successfully created and saved
         order.save()
+
+        # Iterate over each product in the order
+        for product_item in order.cartorderitem_set.all():
+            # Access the user associated with the product
+            product_user = product_item.product_obj.user
+
+            # Update gz_coins for the user by adding the gz_coins of the product
+            product_user.gz_coins += product_item.gz_coins
+            product_user.save()
                 
         now = timezone.now()
         if request.method == "POST":
@@ -2044,7 +1963,7 @@ def update_order_details(order):
             msg.attach_alternative(html_body, "text/html")
             msg.send()
 
-    # Update vendor wallets
+"""     # Update vendor wallets
     for vendor in order.vendor.all():
         cart_order_items = CartOrderItem.objects.filter(order=order, order__payment_status="processing", vendor=vendor).aggregate(amount=models.Sum(F('total_payable') + F('shipping')))
         
@@ -2056,7 +1975,7 @@ def update_order_details(order):
                 vendor.save()
         else:
             vendor.wallet += cart_order_items['amount']
-            vendor.save()
+            vendor.save() """
 
 def PaymentFailedView(request):
     payment_ref = request.GET.get('payment_ref')
@@ -2074,36 +1993,49 @@ def PaymentFailedView(request):
 
 @csrf_exempt
 def create_checkout_session(request, id):
-    request_data = json.loads(request.body)
     order = get_object_or_404(CartOrder, oid=id)
+    if order.payment_method == "credit_card":
+        request_data = json.loads(request.body)
+
+    print(order.payment_method)
+    if order.payment_method == "cash":
+        print("zzzzzzzzzzzzz")
+        return redirect('store:payment-completed', oid=order.oid)
+
 
     # Call initiate_payment to start the payment process
     payment_data = initiate_payment(request, orderId=id, amount=order.total)
-    if "paymentRef" in payment_data:
-        payment_ref = payment_data["paymentRef"]
-        # Construct success and fail URLs
-        success_url = request.build_absolute_uri(reverse('store:success'))
-        fail_url = request.build_absolute_uri(reverse('store:failed'))
+    
+    try:
+        response_json = payment_data.json()
+        if "paymentRef" in response_json:
+            payment_ref = response_json["paymentRef"]
+            # Construct success and fail URLs
+            success_url = request.build_absolute_uri(reverse('store:success'))
+            fail_url = request.build_absolute_uri(reverse('store:failed'))
 
-        # Update order with payment reference
-        order.payment_status = "processing"
-        order.payment_ref = payment_ref  # Save payment_ref to the order
-        order.save()
+            # Update order with payment reference
+            order.payment_status = "processing"
+            order.payment_ref = payment_ref  # Save payment_ref to the order
+            order.save()
 
-        # Return the payment URL and payment reference to frontend
-        return JsonResponse({"payUrl": payment_data["payUrl"], "paymentRef": payment_ref})
-    else:
-        # If payment initiation fails, return error response
-        return JsonResponse({"error": payment_data["error"]}, status=400)
+            # Return the payment URL and payment reference to frontend
+            return JsonResponse({"payUrl": response_json["payUrl"], "paymentRef": payment_ref})
+        else:
+            # If payment initiation fails, return error response
+            return JsonResponse({"error": response_json.get("error", "Unknown error")}, status=400)
+    except json.JSONDecodeError:
+        # If the response is not in JSON format
+        return HttpResponseBadRequest("Invalid JSON response from payment gateway")
 
 def initiate_payment(request, orderId, amount):
     # Make sure to replace these values with your actual credentials and data
     api_key = '665ddd89ecb4e3b38d776b78a:5usETKkdz0MZwYpgWLMIQXg2gtyNgGp'
-    konnect_wallet_id = '65f0e6d5f85f11d7b8c06008'
+    konnect_wallet_id = '65ddd6aecb4e3b38d776989a'
 
-    url = "https://api.preprod.konnect.network/api/v2/payments/init-payment"
+    url = "https://api.konnect.network/api/v2/"
     headers = {
-        "x-api-key": '65f0e6d5f85f11d7b8c06004:x3QEEv76q8kvnSxAXTqjMljIeYLz',
+        "x-api-key": api_key,
         "Content-Type": "application/json"
     }
     webhook_url = request.build_absolute_uri(reverse('store:webhook'))
@@ -2135,7 +2067,8 @@ def initiate_payment(request, orderId, amount):
     }
 
     response = requests.post(url, headers=headers, json=payload)
-    print(response.json())
+    print("bnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbn")
+    print(response, "bnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbn")
     if response.status_code == 200:
         data = response.json()
         return data
@@ -2185,8 +2118,12 @@ def get_payment_status(payment_ref):
 
 def payment_completed_view(request, oid, *args, **kwargs):
     order = CartOrder.objects.get(oid=oid)
-    
-    if order.payment_status == "processing":
+    if order.payment_method == "cash":
+        order.payment_status = "pending"
+        order.delivery_status = "shipping_processing"
+        order.save()
+
+    if order.payment_status == "pending" and order.payment_method == "credit_card":
         order.payment_status = "paid"
         order.payment_method = "Paypal"
         order.delivery_status = "shipping_processing"
@@ -2283,12 +2220,16 @@ def payment_completed_view(request, oid, *args, **kwargs):
             
             o.save()
             
-    elif order.payment_status == "paid":
+    elif order.payment_status == "paid" or order.payment_method == "cash":
         messages.success(request, f'Your Order have been recieved.')
-        return redirect("core:buyer-dashboard")
+        return redirect("core:profile")
+            
+    elif order.payment_status == "pending":
+        messages.success(request, f'Your Order have been recieved.')
+        return redirect("core:profile")
     else:
         messages.success(request, 'Opps... Internal Server Error; please try again later')
-        return redirect("core:buyer-dashboard")
+        return redirect("core:profile")
         
     products = CartOrderItem.objects.filter(order=order)
     

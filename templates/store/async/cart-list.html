@@ -115,7 +115,7 @@
                       <li class="ms-2 ms-md-3">
                         <a
                           class="cart_title"
-                          href="{% url 'store:product-detail' p.product_slug %}"
+                          href="{% url 'store:product-detail' p.meta_title %}"
                         >
                           <span class="fz16">{{p.title|truncatechars:27}}</span>
                           <br />
@@ -209,69 +209,80 @@
             </table>
           </div>
         </div>
-        <div class="col-lg-4 col-xl-3">
+        <div class="col-lg-4 col-xl-4">
           <div class="order_sidebar_widget style2">
-            <h4 class="title">Cart Totals</h4>
-            <ul>
-              <li class="subtitle">
-                <p>
-                  Product Subtotal
-                  <span class="float-end"
-                    >{{ cs }}{{cart_total_amount|floatformat:2}}</span
-                  >
-                </p>
-              </li>
-              <!-- <li class="subtitle"><p>Order Discounts <span class="float-end">-$30.01</span></p></li> -->
-              <li class="subtitle">
-                <p>
-                  Estimated Shipping
-                  <i
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="top"
-                    title="Tooltip on top"
-                    class="bi bi-info-circle-fill"
-                  ></i>
-                  <span class="float-end">{{ cs }}{{total_shipping_amount}}</span>
-                </p>
-              </li>
-              <li class="subtitle">
-                <p>
-                  Estimated {{tax_country.custom_name}}
-                  <i
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="top"
-                    title="Tooltip on top"
-                    class="bi bi-info-circle-fill"
-                  ></i
-                  ><span class="float-end">{{cs}}{{ total_tax|floatformat:2 }}</span>
-                </p>
-              </li>
-              <li class="subtitle">
-                <p>
-                  Service Fee
-                  <span class="float-end"
-                    >{{ cs }}{{product_processing_fee_|floatformat:2}}</span
-                  >
-                </p>
-              </li>
-              <!-- <li class="subtitle"><p>Estimated Taxes <i data-bs-toggle="tooltip" data-bs-placement="top" title="Tooltip on top" class="bi bi-info-circle-fill"></i><span class="float-end">{{ cs }}{{total_tax|floatformat:2}}</span></p></li> -->
-              <!-- <li class="subtitle"><p>Service Fee <span class="float-end">{{ cs }}{{service_fee_amount|floatformat:2}}</span></p></li> -->
-              <li class="subtitle"><hr /></li>
-              <li class="subtitle totals">
-                <p>
-                  Total
-                  <span class="float-end">{{cs}}{{total_amount|floatformat:2}}</span>
-                </p>
-              </li>
-            </ul>
+              <h4 class="title">Cart Totals</h4>
+              <form id="shippingForm" method="POST" action="">
+                  <p class="shipping_title">Delivery Method</p>
+                  <div class="colors__divs">
+                      <div class="divs__div color flexCenter pick_up_in_store">
+                          <div class="shipping_option_container">
+                              <div class="row justify-content-between">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-store"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"></path><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-11a1 1 0 0 0 -1 -1h-1"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle></svg>
+                                  <span class="shipping_text">Free</span>
+                              </div>
+                              <p>Pick up in store</p>
+                              <p>Available in working time</p>
+                          </div>
+                      </div>
+                
+                      <div class="divs__div color flexCenter ship_to_home selected">
+                          <div class="shipping_option_container">
+                              <div class="row justify-content-between">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle></svg>
+                                  <span class="shipping_text">7.00 DT</span>
+                              </div>
+                              <p>Ship to home</p>
+                              <p>1-2 day shipping</p>
+                          </div>
+                      </div>
+                  </div>
+                  <input type="hidden" id="selectedColorInput" name="selected_color" value="1">
+              </form>
+                    
+              <ul>
+                  <li class="subtitle">
+                      <p>
+                          Product Subtotal
+                          <span class="float-end">{{ cs }}{{cart_total_amount|floatformat:2}}</span>
+                      </p>
+                  </li>
+                  <li class="subtitle">
+                      <p>
+                          Estimated Shipping
+                          <i data-bs-toggle="tooltip" data-bs-placement="top" title="Tooltip on top" class="bi bi-info-circle-fill"></i>
+                          <span class="float-end">{{ cs }}{{total_shipping_amount|floatformat:2}}</span>
+                      </p>
+                  </li>
+                  <li class="subtitle">
+                      <p>
+                          Estimated {{tax_country.custom_name}}
+                          <i data-bs-toggle="tooltip" data-bs-placement="top" title="Tooltip on top" class="bi bi-info-circle-fill"></i>
+                          <span class="float-end">{{cs}}{{ tax_amount_|floatformat:2 }}</span>
+                      </p>
+                  </li>
+                  <li class="subtitle">
+                      <p>
+                          Service Fee
+                          <span class="float-end">{{ cs }}{{service_fee_amount|floatformat:2}}</span>
+                      </p>
+                  </li>
+                  <li class="subtitle"><hr /></li>
+                  <li class="subtitle totals">
+                      <p>
+                          Total
+                          <span class="float-end">{{cs}}{{total_amount|floatformat:2}}</span>
+                      </p>
+                  </li>
+      
+                  {% if coupon_name %}
+                  <li><b>{{coupon_name}}</b> Coupon Applied</li>
+                  {% endif %} {% for item in coupon_name.items %} hi {% endfor %}
+              </ul>
           </div>
       
-          <a
-            href="{% url 'store:shipping_address' %}"
-            class="btn w100 mt-4 purple-btn"
-            >Continue</a
-          >
-        </div>
+          <a href="{% url 'store:shipping_address' %}" class="btn w100 mt-4 purple-btn">Continue</a>
+      </div>
       </div>
     </div>
   </section>
@@ -303,4 +314,28 @@
       $("#qty" + id).val(1);
     }
   });
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const shippingOptions = document.querySelectorAll('.colors__divs .divs__div');
+
+    shippingOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            // Remove 'selected' class from all options
+            shippingOptions.forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            // Add 'selected' class to the clicked option
+            option.classList.add('selected');
+
+            // Set the value of the hidden input based on the selected option
+            document.getElementById('selectedColorInput').value = option.classList.contains('pick_up_in_store') ? "0" : "1";
+
+            // Update selected shipping method
+            const selectedShippingMethod = document.getElementById('selectedColorInput').value;
+            console.log('Selected Shipping Method:', selectedShippingMethod);
+
+            // Call a function to reload prices based on the selected method
+        });
+    });
+});
 </script>

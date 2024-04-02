@@ -105,6 +105,7 @@ $(document).on("click", "#question-btn", function(){
         let product_processing_fee = $(".product-processing-fee-" + index).val()
         let product_vendor = $(".product-vendor-" + index).val() 
         let product_brand = $(".product-brand-" + index).val() 
+        let product_gz_coins = $(".product-gz_coins-" + index).val() 
         let product_vendor_slug = $(".product-vendor-slug-" + index).val() 
 
         let product_stock_qty = $(".product-stock-qty-" + index).val() 
@@ -120,6 +121,7 @@ $(document).on("click", "#question-btn", function(){
         console.log("Meta title:", product_meta_title);
         console.log("ID:", product_id);
         console.log("PID:", product_pid);
+        console.log("GZ Coins:", product_gz_coins, "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
         console.log("product_types_choices:", product_types_choices);
         console.log("Image:", product_image);
         console.log("product_shipping_amount:", product_shipping_amount);
@@ -153,6 +155,7 @@ $(document).on("click", "#question-btn", function(){
                     'qty': quantity,
                     'title': product_title,
                     'shipping_amount': product_shipping_amount,
+                    'product_gz_coins': product_gz_coins,
                     'vendor': product_vendor,
                     'product_brand': product_brand,
                     'price': product_price,

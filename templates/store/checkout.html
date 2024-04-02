@@ -202,8 +202,12 @@ Checkout
                   {% endfor %}
                 </div>
                  <div class="ui_kit_button payment_widget_btn">
+                  {% if order.payment_method == "credit_card" %}
                   <button  button id="checkout-button" class="btn btn-track purple-btn w100 mt20">Pay with Debit Card  <i class="fas fa-credit-card"></i></button>
-                  <button class="btn btn-track purple-btn w100 mt10" style="height: 80px;">Pay with PayPal <i class="fab fa-paypal"></i> {{paypal_payment_button.render}}</button>
+                  {% else %}
+                  <button  button id="place-order-button" class="place-order-button btn btn-track purple-btn w100 mt20">Place Order</button>
+                  {% endif %}
+                  {% comment %} <button class="btn btn-track purple-btn w100 mt10" style="height: 80px;">Pay with PayPal <i class="fab fa-paypal"></i> {{paypal_payment_button.render}}</button> {% endcomment %}
                </div>
             </div>
          </div>
@@ -217,45 +221,62 @@ Checkout
 </div>
 <script src="https://js.stripe.com/v3/"></script>
 <script type="text/javascript">
-    // Create an instance of the Stripe object with your publishable API key
-    var stripe = Stripe('{{ stripe_publishable_key }}');
-    var checkoutButton = document.getElementById('checkout-button');
+   $(document).ready(function() {
+       console.log("Document ready");
 
-    checkoutButton.addEventListener('click', function () {
+       // Checkout button click event handler
+       $('#checkout-button').on('click', function() {
+           console.log("Checkout button clicked");
 
-      checkoutButton.innerHTML = "Processing... <i class='fas fa-spinner fa-spin'></i>"
+           // Your existing checkout button logic here
+           var email = document.getElementById('email').value;
+           if (email.length == 0) {
+               alert("Please enter your email address.");
+               return;
+           }
+           fetch("{% url 'store:api_checkout_session' id=order.oid %}", {
+                   method: 'POST',
+                   body: JSON.stringify({
+                       email: email
+                   })
+               })
+               .then(function(response) {
+                   console.log(response);
+                   return response.json();
+               })
+               .then(function(response) {
+                   console.log(response)
+                   return window.location.href = response.payUrl;
+               })
+               .then(function(result) {
+                   if (result.error) {
+                       alert(result.error.message);
+                   }
+               })
+               .catch(function(error) {
+                   console.error('Error:', error);
+               });
+       });
 
-        var email = document.getElementById('email').value;
-        if (email.length == 0) {
-            alert("Please enter your email address.");
-            return;
-        }
-
-        // Create a new Checkout Session using the server-side endpoint you
-        // created in step 3.
-        fetch("{% url 'store:api_checkout_session' id=order.oid %}", {
-            method: 'POST',
-            body: JSON.stringify(
-                { email: email }
-            )
-        })
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (response) {
-                return window.location.href = response.payUrl;
-            })
-            .then(function (result) {
-                // If `redirectToCheckout` fails due to a browser or network
-                // error, you should display the localized error message to your
-                // customer using `error.message`.
-                if (result.error) {
-                    alert(result.error.message);
-                }
-            })
-            .catch(function (error) {
-                console.error('Error:', error);
-            });
-    });
+       // Place Order button click event handler
+       $('#place-order-button').on('click', function() {
+           console.log("Place Order button clicked");
+           window.location.href = '{% url 'store:api_checkout_session' id=order.oid %}';
+           // Your existing place order button logic here
+           $.ajax({
+               url: '{% url 'store:api_checkout_session' id=order.oid %}',
+               type: 'GET',
+               dataType: 'json',
+               success: function(response) {
+                   // Redirect to payment completed page with order ID
+                   window.location.href = '{% url 'store:payment-completed' oid=order.oid %}';
+               },
+               error: function(xhr, status, error) {
+                   console.error('Error:', error);
+                   alert('An error occurred while processing your request. Please try again later.');
+               }
+           });
+       });
+   });
 </script>
 {% endblock content %}

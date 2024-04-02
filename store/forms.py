@@ -46,7 +46,8 @@ class CartOrderItemForm(forms.ModelForm):
     class Meta:
         model = CartOrderItem
         fields = ['delivery_couriers', 'tracking_id']
-        
+
+
         
 class CheckoutForm(forms.ModelForm):
     full_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'id': "", 'placeholder':'Full Name'}), required=False)
@@ -59,6 +60,9 @@ class CheckoutForm(forms.ModelForm):
     billing_state = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'id': "", 'placeholder':'Billing State'}), required=False)
     billing_town_city = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'id': "", 'placeholder':'Billing Town or City'}), required=False)
     billing_address = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'id': "", 'placeholder':' Billing Street and Home Address'}), required=False)
+
+    shipping_method = forms.ChoiceField(choices=CartOrder.SHIPPING_METHOD_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'id': "", 'placeholder':'Shipping Method'}), required=True)
+    payment_method = forms.ChoiceField(choices=CartOrder.PAYMENT_METHOD_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'id': "", 'placeholder':'Payment Method'}), required=True)
 
     class Meta:
         model = CartOrder
