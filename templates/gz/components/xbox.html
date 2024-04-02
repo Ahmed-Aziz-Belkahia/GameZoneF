@@ -16,7 +16,7 @@
             <div class="layer__CTA">
                 <a href="/detail/{{nintendo_banner.product.meta_title}}" class="layerCTA__div flexCenter">
                     <div class="layerCTA__img">
-                        <img src="{{nintendo_banner.banner.url}}" alt="{{nintendo_banner.product.title}}">
+                        {% comment %} <img src="{{nintendo_banner.banner.url}}" alt="{{nintendo_banner.product.title}}"> {% endcomment %}
                         <picture>
                             <!-- WebP format for screens 768px and above -->
                             <source media="(min-width: 768px)" type="image/webp" srcset="{{nintendo_banner.banner.url}}">

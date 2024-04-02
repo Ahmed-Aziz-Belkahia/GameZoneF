@@ -290,11 +290,17 @@
   flex-direction: column;
   font-size: .875rem;
   font-weight: 500;
-  padding: .5rem 1.25rem;
+  padding: 0;
   text-align: center;
   text-transform: none;
   width: auto;
   color: black;
+  width: 100px;
+  height: 50px;
+  justify-content: center;
+}
+.choice-input input{
+  display: none
 }
 input[type="radio"]:checked + .choice-input{
   border: 1px solid black;
@@ -302,7 +308,12 @@ input[type="radio"]:checked + .choice-input{
 }
 .choice_input_label{
   padding: 0 1rem;
+  cursor: pointer;
 }
+.selected {
+  background-color: #94d92f;
+  color: white;
+  font-weight: 600;}
 </style>
   
   <!-- <div class="body_content_wrapper position-relative"> -->
@@ -448,7 +459,7 @@ input[type="radio"]:checked + .choice-input{
                   <div class="prop-title">{{type.title}}:</div>
                   <div class="d-flex align-items-center gap-3">
                     {% for choice in type.choices.all %}
-                    <div class="choice-input">
+                    <div class="choice-input {% if forloop.first %} selected {% endif %}">
                       <input type="radio" id="{{ type.title }}_{{ choice.title }}" name="{{ type.title }}" value="{{ choice.title }}" {% if forloop.first %} checked {% endif %}>
                       {% if choice.image %}
                         <img src="{{choice.image.url}}" alt="{{choice.title}}">
@@ -1643,5 +1654,27 @@ input[type="radio"]:checked + .choice-input{
     $temp.remove();
     $("#clipboard").text("URL copied!");
   })
+</script>
+<script>
+    // Get all type containers
+    const typeContainers = document.querySelectorAll('.d-flex');
+
+    // Add change event listener to each type container
+    typeContainers.forEach(function(container) {
+        const radios = container.querySelectorAll('input[type="radio"]');
+        radios.forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                // Remove 'selected' class from all elements in this type container
+                container.querySelectorAll('.choice-input').forEach(function(choiceInput) {
+                    choiceInput.classList.remove('selected');
+                });
+
+                // Add 'selected' class to the parent div of the selected input
+                if (radio.checked) {
+                    radio.parentElement.classList.add('selected');
+                }
+            });
+        });
+    });
 </script>
 {% endblock content %}
