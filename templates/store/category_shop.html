@@ -188,7 +188,7 @@ label{
             <i class="fa-solid fa-xmark closefilter"></i>
         </button>
       </div>
-      <form method="GET">
+      <form method="GET" class="filter-form">
           <!-- Filter by brands -->
           <h3>Brands</h3>
           <ul>
@@ -235,7 +235,7 @@ label{
           
           <label for="max_price">Max Price:</label>
           <input type="number" name="max_price" id="max_price" value="{{ max_price }}">
-          
+          <input type="hidden" name="sort_by" id="sort_by" value="">
           <button type="submit" class="btn btn-tfhm button-add-to-cart add-to-cart-btn purple-btn mt-2 w-100">Apply Filters</button>
       </form>
   </div>
@@ -364,5 +364,33 @@ label{
       });
   });
 
+
+
+
+
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const sortButtons = document.querySelectorAll(".dropdown-item");
+    const sortInput = document.getElementById("sort_by");
+    const form = document.querySelector(".filter-form");
+    console.log(sortButtons)
+    console.log(sortInput)
+    console.log(form)
+    
+    sortButtons.forEach(function(sortButton) {
+        sortButton.addEventListener("click", function(event) {
+            event.preventDefault(); // Prevent default link behavior
+            
+            // Get the data-id attribute value of the clicked sort button
+            const sortByValue = sortButton.getAttribute("data-id");
+            
+            // Update the value of the hidden input field
+            sortInput.value = sortByValue;
+            
+            // Submit the form
+            form.submit();
+        });
+    });
+});
     </script>
     {% endblock content %}

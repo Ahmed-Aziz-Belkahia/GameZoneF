@@ -34,7 +34,7 @@
                             <i class="fa-solid fa-store"></i>
                         </div>
                     </div>
-                    <a href="/profile/orders" class="track_container">
+                    <a href="{% url "core:buyer-orders" %}" class="track_container">
                         <div class="track_details">
                             <p>Track Order </p>
                         </div>
@@ -156,7 +156,7 @@
                             </li>
                             <li class="option_link">
                                 <span class="fas fa-heart"></span>
-                                <a href="{% url "core:buyer-orders" %}">Wishlist 
+                                <a href="{% url "core:buyer-wishlist" %}">Wishlist 
                                 </a>
                             </li>
                             <li class="option_link signout">
@@ -590,4 +590,10 @@
         }
         return cookieValue;
     }
+
+
+
+
+
+    
 </script>

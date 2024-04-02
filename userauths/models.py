@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save
 from django.utils.html import mark_safe
 from django_ckeditor_5.fields import CKEditor5Field
+import logging
 
 
 from PIL import Image
@@ -47,6 +48,13 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
+    def save(self, *args, **kwargs):
+        if self.pk:  # Check if the object is already in the database (updating)
+            original = User.objects.get(pk=self.pk)
+            if self.gz_coins != original.gz_coins:
+                print(f"gz_coins changed from {original.gz_coins} to {self.gz_coins} for user {self.username}")
+        
+        super(User, self).save(*args, **kwargs)
     # def save(self, *args, **kwargs):
     #     if self.roles == "wcfm_vendor":
     #         "vendor.Vendor".objects.create(user=self, profile=None)

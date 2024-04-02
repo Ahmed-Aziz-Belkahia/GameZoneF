@@ -263,19 +263,6 @@ Checkout
            console.log("Place Order button clicked");
            window.location.href = '{% url 'store:api_checkout_session' id=order.oid %}';
            // Your existing place order button logic here
-           $.ajax({
-               url: '{% url 'store:api_checkout_session' id=order.oid %}',
-               type: 'GET',
-               dataType: 'json',
-               success: function(response) {
-                   // Redirect to payment completed page with order ID
-                   window.location.href = '{% url 'store:payment-completed' oid=order.oid %}';
-               },
-               error: function(xhr, status, error) {
-                   console.error('Error:', error);
-                   alert('An error occurred while processing your request. Please try again later.');
-               }
-           });
        });
    });
 </script>

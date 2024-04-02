@@ -250,6 +250,13 @@ def shop(request):
     if selected_ratings:
         filtered_products = filtered_products.filter(reviews__rating__in=selected_ratings).distinct()
 
+    sort_by = request.GET.get('sort_by')
+    if sort_by:
+        if sort_by == 'price-low-to-high':
+            filtered_products = filtered_products.order_by('price')
+        elif sort_by == 'price-high-to-low':
+            filtered_products = filtered_products.order_by('-price')    
+
     # Paginate the filtered products
     paginator = Paginator(filtered_products, 16)
     page_number = request.GET.get('page')
@@ -321,6 +328,13 @@ def category_shop(request, meta_title):
     selected_ratings = request.GET.getlist('ratings')
     if selected_ratings:
         filtered_products = filtered_products.filter(reviews__rating__in=selected_ratings).distinct()
+
+    sort_by = request.GET.get('sort_by')
+    if sort_by:
+        if sort_by == 'price-low-to-high':
+            filtered_products = filtered_products.order_by('price')
+        elif sort_by == 'price-high-to-low':
+            filtered_products = filtered_products.order_by('-price')    
 
     # Paginate the filtered products
     paginator = Paginator(filtered_products, 16)
@@ -397,6 +411,13 @@ def brand_shop(request, meta_title):
     selected_ratings = request.GET.getlist('ratings')
     if selected_ratings:
         filtered_products = filtered_products.filter(reviews__rating__in=selected_ratings).distinct()
+
+    sort_by = request.GET.get('sort_by')
+    if sort_by:
+        if sort_by == 'price-low-to-high':
+            filtered_products = filtered_products.order_by('price')
+        elif sort_by == 'price-high-to-low':
+            filtered_products = filtered_products.order_by('-price')  
 
     # Paginate the filtered products
     paginator = Paginator(filtered_products, 16)
@@ -1480,15 +1501,6 @@ def shipping_address(request):
         
             for p_id, item in request.session['cart_data_obj'].items():
                 product = Product.objects.get(id=p_id)
-                print(product.gz_coins)
-                print(request.user.gz_coins)
-                print(item['qty'])
-                print()
-                print(request.user)
-                print(request.user.gz_coins)
-
-                request.user.gz_coins = int(product.gz_coins) * int(item['qty']) + int(request.user.gz_coins)
-                request.user.save()
 
                 cart_total_amount_ += int(item['qty']) * float(item['price'])
                 shipping_amount_ += int(item['qty']) * product.shipping_amount
@@ -1686,13 +1698,13 @@ def checkout_view(request, oid, *args, **kwargs):
         order.save()
 
         # Iterate over each product in the order
-        for product_item in order.cartorderitem_set.all():
-            # Access the user associated with the product
-            product_user = product_item.product_obj.user
-
-            # Update gz_coins for the user by adding the gz_coins of the product
-            product_user.gz_coins += product_item.gz_coins
-            product_user.save()
+        #for product_item in order.cartorderitem_set.all():
+        #    # Access the user associated with the product
+        #    product_user = product_item.product_obj.user
+        #
+        #    # Update gz_coins for the user by adding the gz_coins of the product
+        #    #product_user.gz_coins += product_item.gz_coins
+        #    #product_user.save()
                 
         now = timezone.now()
         if request.method == "POST":
@@ -1993,11 +2005,21 @@ def PaymentFailedView(request):
 
 @csrf_exempt
 def create_checkout_session(request, id):
+    print("Create checkout session")
     order = get_object_or_404(CartOrder, oid=id)
     if order.payment_method == "credit_card":
         request_data = json.loads(request.body)
 
     print(order.payment_method)
+
+    for product_item in order.cartorderitem_set.all():
+        print(product_item)
+        # Access the user associated with the product
+        product_user = product_item.product_obj.user
+        # Update gz_coins for the user by adding the gz_coins of the product
+        product_user.gz_coins += product_item.gz_coins
+        product_user.save()
+
     if order.payment_method == "cash":
         print("zzzzzzzzzzzzz")
         return redirect('store:payment-completed', oid=order.oid)

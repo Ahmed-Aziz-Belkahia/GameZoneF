@@ -13,7 +13,7 @@
  </style>
     <!-- Listing Grid View -->
     <div class="filter-options">
-      <form method="GET">
+      <form method="GET" class="filter-form">
           <!-- Filter by categories -->
           <h3>Categories</h3>
           <ul>
@@ -60,7 +60,7 @@
           
           <label for="max_price">Max Price:</label>
           <input type="number" name="max_price" id="max_price" value="{{ max_price }}">
-          
+          <input type="hidden" name="sort_by" id="sort_by" value="">
           <button type="submit">Apply Filters</button>
       </form>
   </div>
@@ -134,4 +134,79 @@
         </div>
       </div>
     </section>
+
+
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const filters = document.querySelector(".filter__button"); // Added "." for class selector
+        const menu = document.querySelector(".filter-options"); // Added "." for class selector
+        const body = document.querySelector("body");
+        const closefilter = document.querySelector(".closefilter");
+
+        // Toggle menu when button is clicked
+        filters.addEventListener("click", function() {
+            menu.style.display = (menu.style.display === "none" || menu.style.display === "") ? "block" : "none";
+            body.style.overflowY = menu.style.display === "none" ? "auto" : "hidden";
+        });
+    
+        closefilter.addEventListener("click", function() {
+            menu.style.display = "none";
+            body.style.overflowY = "auto";
+        });
+
+        // Close menu when clicking outside of it
+        document.addEventListener("click", function(event) {
+            if (!menu.contains(event.target) && !filters.contains(event.target)) {
+                menu.style.display = "none";
+                body.style.overflowY = "auto";
+            }
+        });
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+      const button = document.querySelector(".sort__button");
+      const menu = document.querySelector(".sort-dropdown-menu");
+  
+      // Toggle menu when button is clicked
+      button.addEventListener("click", function () {
+          menu.style.display = (menu.style.display === "none" || menu.style.display === "") ? "block" : "none";
+      });
+  
+      // Close menu when clicking outside of it
+      document.addEventListener("click", function (event) {
+          if (!menu.contains(event.target) && !button.contains(event.target)) {
+              menu.style.display = "none";
+          }
+      });
+  });
+
+
+
+
+
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const sortButtons = document.querySelectorAll(".dropdown-item");
+    const sortInput = document.getElementById("sort_by");
+    const form = document.querySelector(".filter-form");
+    console.log(sortButtons)
+    console.log(sortInput)
+    console.log(form)
+    
+    sortButtons.forEach(function(sortButton) {
+        sortButton.addEventListener("click", function(event) {
+            event.preventDefault(); // Prevent default link behavior
+            
+            // Get the data-id attribute value of the clicked sort button
+            const sortByValue = sortButton.getAttribute("data-id");
+            
+            // Update the value of the hidden input field
+            sortInput.value = sortByValue;
+            
+            // Submit the form
+            form.submit();
+        });
+    });
+});
+    </script>
     {% endblock content %}
