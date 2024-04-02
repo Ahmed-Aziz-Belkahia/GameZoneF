@@ -2006,6 +2006,7 @@ def PaymentFailedView(request):
 @csrf_exempt
 def create_checkout_session(request, id):
     print("Create checkout session")
+    request.session.pop('cart_data_obj')
     order = get_object_or_404(CartOrder, oid=id)
     if order.payment_method == "credit_card":
         request_data = json.loads(request.body)
