@@ -2051,11 +2051,13 @@ def create_checkout_session(request, id):
         return HttpResponseBadRequest("Invalid JSON response from payment gateway")
 
 def initiate_payment(request, orderId, amount):
-    # Make sure to replace these values with your actual credentials and data
-    api_key = '665ddd89ecb4e3b38d776b78a:5usETKkdz0MZwYpgWLMIQXg2gtyNgGp'
+    # Replace these values with your actual credentials and data for the production environment
+    api_key = '65ddd6aecb4e3b38d7769896:wHwnU5eqcpICZvBCLIpoVnBonfJ'
     konnect_wallet_id = '65ddd6aecb4e3b38d776989a'
 
-    url = "https://api.konnect.network/api/v2/"
+    # Update the URL to point to the production API endpoint
+    url = "https://api.konnect.network/api/v2/payments/init-payment"
+
     headers = {
         "x-api-key": api_key,
         "Content-Type": "application/json"
@@ -2089,10 +2091,9 @@ def initiate_payment(request, orderId, amount):
     }
 
     response = requests.post(url, headers=headers, json=payload)
-    print("bnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbn")
-    print(response, "bnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbnbn")
+    print(response.content)
     if response.status_code == 200:
-        data = response.json()
+        data = response
         return data
     else:
         error_message = "Failed to initiate payment"

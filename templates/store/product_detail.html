@@ -320,13 +320,13 @@ input[type="radio"]:checked + .choice-input{
           <div class="col-xl-6">
             <div class="breadcrumb_content">
               <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">Product</a></li>
+                <li class="breadcrumb-item"><a href="{% url "store:home" %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url "store:shop" %}">Products</a></li>
                 
                 {% if product.brand %}
-                  <li class="breadcrumb-item"><a href="#">{{product.brand}}</a></li>
+                  <li class="breadcrumb-item"><a href="{% url "store:brand-shop" meta_title=product.brand.meta_title %}">{{product.brand}}</a></li>
                 {% endif %}
-                <li class="breadcrumb-item active" aria-current="page"><a href="#">{{product.title|title|truncatechars:20}}</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><a href="{% url "store:product-detail" meta_title=product.meta_title %}">{{product.title|title|truncatechars:20}}</a></li>
               </ol>
             </div>
           </div>
