@@ -206,14 +206,13 @@ def shop(request):
     top_selling = Product.objects.filter(status="published").order_by("-orders")[:20]
     query_params = request.GET
 
-    # Get all categories and brands associated with the products
+    # Get all categories, brands, and subcategories associated with the products
     categories = Category.objects.filter(products__in=products).distinct()
     brands = Brand.objects.filter(product_brand__in=products).distinct()
-    print(categories, "aaaaaaaaaaaaaaaaaaaaa")
     direct_subcategories = SubCategory.objects.none()
     for category in categories:
         direct_subcategories = direct_subcategories.union(category.subcategories.filter(parent_subcategory=None))
-
+    print(direct_subcategories, "bbbbbbbbbbbbbbbbbbbbbbbbb")
     # Filter products by price range
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
@@ -231,6 +230,11 @@ def shop(request):
     if selected_categories:
         filtered_products = filtered_products.filter(category__meta_title__in=selected_categories)
 
+    # Filter products by selected subcategories
+    selected_subcategories = request.GET.getlist('subcategories')
+    if selected_subcategories:
+        filtered_products = filtered_products.filter(category__subcategories__meta_title__in=selected_subcategories)
+
     # Filter products by selected brands
     selected_brands = request.GET.getlist('brands')
     if selected_brands:
@@ -246,7 +250,7 @@ def shop(request):
     unique_ratings = sorted(set(all_ratings))
     
     # Filter products by selected ratings
-    selected_ratings = request.GET.getlist('ratings')
+    selected_ratings = [int(rating.strip()) for rating in request.GET.getlist('ratings')]
     if selected_ratings:
         filtered_products = filtered_products.filter(reviews__rating__in=selected_ratings).distinct()
 
@@ -273,6 +277,7 @@ def shop(request):
         "max_price": max_price,
         'all_ratings': [(rating, '★' * rating + '☆' * (5 - rating)) for rating in unique_ratings],
         'selected_categories': selected_categories,
+        'selected_subcategories': selected_subcategories,
         'selected_brands': selected_brands,
         'selected_ratings': selected_ratings,
     }
@@ -325,7 +330,7 @@ def category_shop(request, meta_title):
     unique_ratings = sorted(set(all_ratings))
     
     # Filter products by selected ratings
-    selected_ratings = request.GET.getlist('ratings')
+    selected_ratings = [int(rating.strip()) for rating in request.GET.getlist('ratings')]
     if selected_ratings:
         filtered_products = filtered_products.filter(reviews__rating__in=selected_ratings).distinct()
 
@@ -408,7 +413,7 @@ def brand_shop(request, meta_title):
     unique_ratings = sorted(set(all_ratings))
     
     # Filter products by selected ratings
-    selected_ratings = request.GET.getlist('ratings')
+    selected_ratings = [int(rating.strip()) for rating in request.GET.getlist('ratings')]
     if selected_ratings:
         filtered_products = filtered_products.filter(reviews__rating__in=selected_ratings).distinct()
 
@@ -434,6 +439,7 @@ def brand_shop(request, meta_title):
         "max_price": max_price,
         'all_ratings': [(rating, '★' * rating + '☆' * (5 - rating)) for rating in unique_ratings],
         'selected_ratings': selected_ratings,
+        'selected_categories': selected_categories,
         'selected_subcategories': selected_subcategories,
     }
     if products:

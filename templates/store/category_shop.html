@@ -195,7 +195,7 @@ label{
               {% for brand in brands %}
                   <li>
                       <label>
-                          <input type="checkbox" name="brands" value="{{ brand.meta_title }}">
+                          <input type="checkbox" name="brands" value="{{ brand.meta_title }}" {% if brand.meta_title in selected_brands %} checked {% endif %}>
                           {{ brand.title }}
                       </label>
                   </li>
@@ -208,7 +208,7 @@ label{
               {% for subcategory in direct_subcategories %}
                   <li>
                       <label>
-                          <input type="checkbox" name="subcategories" value="{{ subcategory.meta_title }}">
+                          <input type="checkbox" name="subcategories" value="{{ subcategory.meta_title }}" {% if subcategory.meta_title in selected_subcategories %} checked {% endif %}>
                           {{ subcategory.title }}
                       </label>
                   </li>
@@ -221,7 +221,7 @@ label{
               {% for rating_choice in all_ratings %}
                   <li>
                       <label>
-                          <input type="checkbox" name="ratings" value="{{ rating_choice.0 }}">
+                          <input type="checkbox" name="ratings" value="{{ rating_choice.0 }}" {% if rating_choice.0 in selected_ratings %} checked {% endif %}>
                           {{ rating_choice.1 }}
                       </label>
                   </li>

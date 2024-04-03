@@ -195,7 +195,7 @@
               {% for category in shop_categories %}
                   <li>
                       <label>
-                          <input type="checkbox" name="categorys" value="{{ category.meta_title }}">
+                          <input type="checkbox" name="categorys" value="{{ category.meta_title }}" {% if category.meta_title in selected_categories %} checked {% endif %}>
                           {{ category.title }}
                       </label>
                   </li>
@@ -208,7 +208,7 @@
               {% for subcategory in direct_subcategories %}
                   <li>
                       <label>
-                          <input type="checkbox" name="subcategories" value="{{ subcategory.meta_title }}">
+                          <input type="checkbox" name="subcategories" value="{{ subcategory.meta_title }}" {% if subcategory.meta_title in selected_subcategories %} checked {% endif %}>
                           {{ subcategory.title }}
                       </label>
                   </li>
@@ -221,7 +221,7 @@
               {% for rating_choice in all_ratings %}
                   <li>
                       <label>
-                          <input type="checkbox" name="ratings" value="{{ rating_choice.0 }}">
+                          <input type="checkbox" name="ratings" value="{{ rating_choice.0 }}" {% if rating_choice.0 in selected_ratings %} checked {% endif %}>
                           {{ rating_choice.1 }}
                       </label>
                   </li>
