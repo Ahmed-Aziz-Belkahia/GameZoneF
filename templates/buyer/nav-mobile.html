@@ -2,6 +2,22 @@
    ul,li{
       list-style: none;
    }
+   .gz-coins {
+      /* background: #0c0c0c; */
+      width: fit-content;
+      /* padding: 0 1rem; */
+      border-radius: 3px;
+  }
+    .gz-coins > span {
+      -webkit-text-fill-color: transparent;
+      background: linear-gradient(to right top, #1555b5, #008de9, #00bdda, #00e58f, #a2ff00);
+      background-image: linear-gradient(to right top, #1555b5, #008de9, #00bdda, #00e58f, #a2ff00);
+      background-clip: text;
+      -webkit-background-clip: text;
+      font-weight: 700;
+      font-size: 15px;
+      width: fit-content;
+  }
 </style>
 <div class="row" style="margin-top: 140px;">
    <!-- style="margin-top: 100px;" -->
@@ -20,7 +36,9 @@
                   
                <a class="stitle" >{{request.user.email}}</a> <br>
                <a class="stitle" >Account ID: <b><i>{{request.user.id}}</i></b></a>
-
+               <div class="gz-coins">
+                  <span>{{ request.user.gz_coins }} GZ Coins</span>
+                 </div>
             </div>
          </div>
           <div class="dropdown">

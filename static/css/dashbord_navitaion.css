@@ -3,7 +3,7 @@
 }
 
 .dashboard_navigationbar .dropbtn {
-    background-color: #443297;
+    background-color: #94d92f;
     border: none;
     border-radius: 5px;
     color: #ffffff;
@@ -24,7 +24,7 @@
 
 .dashboard_navigationbar .dropbtn:hover,
 .dashboard_navigationbar .dropbtn:focus {
-    background-color: #443297;
+    background-color: #94d92f;
     border: none;
     cursor: pointer;
     outline: none
@@ -73,7 +73,7 @@
 }
 
 .dashboard_navigationbar .dropdown-content li a.active {
-    background-color: #352191
+    background-color: #86bc42
 }
 
 .dashboard_navigationbar .dropdown-content li.active a {
@@ -85,7 +85,7 @@
 }
 
 .dashboard_navigationbar .show {
-    background-color: #443297;
+    background-color: #94d92f;
     display: block;
     -webkit-animation: fadein 2s;
     -moz-animation: fadein 2s;
