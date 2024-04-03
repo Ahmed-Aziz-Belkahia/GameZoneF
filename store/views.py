@@ -1479,6 +1479,10 @@ def shipping_address(request):
                 )
                 order.save()
             else:
+                if request.user.is_authenticated():
+                    userr = request.user
+                else:
+                    userr = None
                 order = CartOrder.objects.create(
                     full_name=full_name,
                     email=email,
@@ -1496,7 +1500,7 @@ def shipping_address(request):
                     billing_address=billing_address,
 
                     price=cart_total_amount, 
-                    buyer=request.user, 
+                    buyer=userr, 
                     total=total_amount__, 
                     original_total=total_amount__,
                     shipping=shipping_amount__, 
