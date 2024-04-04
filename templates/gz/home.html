@@ -10,8 +10,7 @@
 {% endblock header %}
 
 {% block main %}
-{% comment %} <div id="preloader" class="preloader"></div>
- {% endcomment %} 
+<div id="preloader" class="preloader"></div>
     <div class="main__div">
 
         {% include 'gz/components/hero.html' %}
@@ -43,7 +42,7 @@
 
 {% block scripts %}
 <script>
-{% comment %}     $(document).ready(function() {
+ $(document).ready(function() {
         function preloaderLoad() {
             if ($('.preloader').length) {
                 $('.preloader').delay(1000).fadeOut(300, function() {
@@ -67,7 +66,7 @@
                 });
             }, 5000);
         });
-    }); {% endcomment %}
+    }); 
     
 </script>
 {% endblock scripts %}

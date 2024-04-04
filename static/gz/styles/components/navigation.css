@@ -189,7 +189,7 @@ height: fit-content;
 .header__categories {
     z-index: 40;
     position: fixed;
-    top: 86px;
+    top: 84px;
     left: 0;
     width: 100%;
     background-color: #f0f0f0;

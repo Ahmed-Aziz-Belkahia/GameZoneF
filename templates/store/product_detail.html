@@ -329,7 +329,7 @@ input[type="radio"]:checked + .choice-input{
   margin-top: 16px;
   padding-left: 1rem;
 }
-@media (min-width: 768px){
+
   .product-attribute-redesign .product-attribute-table-redesign tr {
       font-size: .875rem;
   }
@@ -337,8 +337,7 @@ input[type="radio"]:checked + .choice-input{
       {% comment %} border-bottom: 40px solid #b5b5b5; {% endcomment %}
       font-size: 15px;
   }
-}
-@media (min-width: 768px){
+
   .product-attribute-redesign .product-attribute-table-redesign tr th {
       width: 30%;
   }
@@ -352,8 +351,6 @@ input[type="radio"]:checked + .choice-input{
       border-bottom: 1px solid #b5b5b5;
   }
 
-}
-@media (min-width: 768px){
   .product-detail-redesign .product-attribute-table-redesign th {
       min-width: 150px;
   }
@@ -368,18 +365,23 @@ input[type="radio"]:checked + .choice-input{
       font-weight: 300;
       border-bottom: 1px solid #b5b5b5;
   }
-}
-.zoomimg_wrapper {
-  overflow: auto; /* Enable scrolling for the wrapper */
-  -webkit-overflow-scrolling: touch; /* Enable smooth scrolling for iOS */
-  position: relative; /* Add position relative */
-}
+
+@media screen and (max-width: 768px){
+  .zoomimg_wrapper {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    display: flex;
+    justify-content: center;
+  }
 .zoomimg_wrapper img {
   touch-action: manipulation;
   max-width: 100%; /* Ensure image doesn't exceed its container */
   z-index: -1;
     position: inherit;
     -webkit-overflow-scrolling: touch;
+    border: 1px solid #94d92f;
+  }
 }
 </style>
   
