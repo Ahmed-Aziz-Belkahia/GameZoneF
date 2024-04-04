@@ -351,6 +351,7 @@ input[type="radio"]:checked + .choice-input{
       text-align: left;
       border-bottom: 1px solid #b5b5b5;
   }
+
 }
 @media (min-width: 768px){
   .product-detail-redesign .product-attribute-table-redesign th {
@@ -367,6 +368,18 @@ input[type="radio"]:checked + .choice-input{
       font-weight: 300;
       border-bottom: 1px solid #b5b5b5;
   }
+}
+.zoomimg_wrapper {
+  overflow: auto; /* Enable scrolling for the wrapper */
+  -webkit-overflow-scrolling: touch; /* Enable smooth scrolling for iOS */
+  position: relative; /* Add position relative */
+}
+.zoomimg_wrapper img {
+  touch-action: manipulation;
+  max-width: 100%; /* Ensure image doesn't exceed its container */
+  z-index: -1;
+    position: inherit;
+    -webkit-overflow-scrolling: touch;
 }
 </style>
   
@@ -1729,5 +1742,6 @@ input[type="radio"]:checked + .choice-input{
             });
         });
     });
+
 </script>
 {% endblock content %}

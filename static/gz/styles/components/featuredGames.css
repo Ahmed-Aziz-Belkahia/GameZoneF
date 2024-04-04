@@ -32,3 +32,11 @@
     }
     
 }
+@media screen and (max-width: 768px) {
+    .featuredGames__game{
+        height: auto;
+    }
+    .featuredGames__div{
+        padding: 0 2rem;
+    }
+}

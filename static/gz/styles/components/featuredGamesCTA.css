@@ -89,3 +89,14 @@
   }
   
 }
+@media screen and (max-width: 768px){
+  .main__featureGamesCTA{
+    height: auto;
+  }
+  .main__featureGamesCTA .swiper-wrapper{
+    height: auto;
+  }
+  .swiper-slide img{
+    object-fit: contain;
+  }
+}

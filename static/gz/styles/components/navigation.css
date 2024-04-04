@@ -512,6 +512,9 @@ height: fit-content;
     right: 0;
     width: 100px;
 }
+.closefilter{
+    color: black;
+}
 @media screen and (max-width: 768px) {
     .navbar__search{
         display: none;
@@ -541,13 +544,13 @@ height: fit-content;
     }
     .header__categories{
         width: 100vw;
-        top: 86px;
+        top: 72px;
     }
     .category__div a{
         width: max-content;
     }
     .header__div{
-        height: 134px;
+        height: 122px;
     }
     .header__navbar{
         width: 100vw;

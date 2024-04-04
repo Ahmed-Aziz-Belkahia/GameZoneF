@@ -1186,7 +1186,7 @@
     }
 
     /* ----- Scroll To top ----- */
-    function scrollToTop() {
+/*     function scrollToTop() {
         var btn = $('.scrollToHome');
         $(window).on('scroll', function() {
             if ($(window).scrollTop() > 300) {
@@ -1201,7 +1201,7 @@
                 scrollTop: 0
             }, '300');
         });
-    }
+    } */
 
     /* ----- Mega Dropdown Content ----- */
     $(document).on('ready', function() {
