@@ -5,7 +5,7 @@
     <title>GameZone - {% block title %} {% endblock title %}</title>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1"/>
     <base href="{% static '/' %}">
     <meta
       name="keywords"
@@ -2262,7 +2262,7 @@
           </div>
         </div>
       </section>
-      <a class="scrollToHome" href="#"><i class="fas fa-angle-up"></i></a>
+      {% comment %} <a class="scrollToHome" href="#"><i class="fas fa-angle-up"></i></a> {% endcomment %}
       <script>
         let ShopDate = document.getElementById("found-date");
         let date = new Date().getFullYear();
@@ -2335,7 +2335,6 @@
     <script src="{% static 'js/bootstrap-select.min.js' %}"></script>
     <script src="{% static 'js/jquery.mmenu.all.js' %}"></script>
     <script src="{% static 'js/ace-responsive-menu.js' %}"></script>
-    <script src="{% static 'js/jquery-scrolltofixed-min.js' %}"></script>
     <script src="{% static 'js/slider.js' %}"></script>
     <script src="{% static 'js/scrollbalance.js' %}"></script>
     <script src="{% static 'js/single-counter.js' %}"></script>
@@ -2352,8 +2351,8 @@
     <script src="{% static 'js/jquery.mmenu.all.js' %}"></script>
     <script src="{% static 'js/ace-responsive-menu.js' %}"></script>
     <script src="{% static 'js/isotop.js' %}"></script>
-    <script src="{% static 'js/parallax.js' %}"></script>
-    <script src="{% static 'js/jquery-scrolltofixed-min.js' %}"></script>
+    {% comment %} <script src="{% static 'js/parallax.js' %}"></script> {% endcomment %}
+     <script src="{% static 'js/jquery-scrolltofixed-min.js' %}"></script>
     <script src="{% static 'js/wow.min.js' %}"></script>
     <script src="{% static 'js/slider.js' %}"></script>
     <script src="{% static 'js/jquery.ez-plus.js' %}"></script>

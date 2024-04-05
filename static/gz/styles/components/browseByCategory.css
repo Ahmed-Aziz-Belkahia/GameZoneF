@@ -59,7 +59,7 @@
 
 @media screen and (max-width: 1024px) {
     .broweByCategory__categorys{
-        padding: 0 5rem;
+        padding: 0 2rem;
         flex-wrap: nowrap;
     }
 }
@@ -67,7 +67,13 @@
     .broweByCategory__categorys{
         padding: 0;
     }
+    .broweByCategory__div{
+        padding: 2rem 0;
+    }
     .broweByCategory__categorys{
         flex-wrap: wrap;
+    }
+    .categorys__category{
+        width: 50%;
     }
 }

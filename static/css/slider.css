@@ -75,7 +75,7 @@
 }
 
 .owl-carousel.owl-loading {
-    opacity: 0;
+    /* opacity: 0; */
     display: block
 }
 

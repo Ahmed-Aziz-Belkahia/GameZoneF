@@ -179,6 +179,17 @@
    .filter_box{
      position: relative;
    }
+   @media screen and (max-width: 768px){
+    .filter__div{
+      padding: 10px;
+      padding-right: var(--bs-gutter-x, .75rem);
+      padding-left: var(--bs-gutter-x, .75rem);
+    }
+   }
+   .reset-btn{
+    background: white;
+      border: 1px solid #212529;
+   }
  </style>
     <!-- Listing Grid View -->
     <div class="filter-options">
@@ -237,6 +248,7 @@
           <input type="number" name="max_price" id="max_price" value="{{ max_price }}">
           <input type="hidden" name="sort_by" id="sort_by" value="">
           <button type="submit" class="btn btn-tfhm button-add-to-cart add-to-cart-btn purple-btn mt-2 w-100">Apply Filters</button>
+          <a href="{% url 'store:shop' %}" class="btn btn-tfhm button-add-to-cart add-to-cart-btn reset-btn mt-2 w-100">Reset</a>
       </form>
 
   </div>
