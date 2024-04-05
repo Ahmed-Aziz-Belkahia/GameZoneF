@@ -1479,7 +1479,7 @@ def shipping_address(request):
                 )
                 order.save()
             else:
-                if request.user.is_authenticated():
+                if request.user.is_authenticated:
                     userr = request.user
                 else:
                     userr = None
