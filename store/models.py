@@ -5,6 +5,8 @@ from django.utils import timezone
 from django_ckeditor_5.fields import CKEditor5Field
 from django.template.defaultfilters import escape
 from django.urls import reverse
+from django.core.exceptions import ObjectDoesNotExist
+
 from django.shortcuts import redirect
 from django.utils.text import slugify
 
@@ -444,27 +446,46 @@ class Product(models.Model):
         return order_count
     
     def save(self, *args, **kwargs):
-        if self.slug == "" or self.slug == None:
+        if not self.slug or not self.meta_title:
             uuid_key = shortuuid.uuid()
             uniqueid = uuid_key[:4]
-            self.slug = slugify(self.title) + "-" + str(uniqueid.lower())
 
-        if self.meta_title == "" or self.meta_title == None:
-            uuid_key = shortuuid.uuid()
-            uniqueid = uuid_key[:4]
-            self.meta_title = slugify(self.title) + "-" + str(uniqueid.lower())
-        
-        if self.stock_qty != None:
+            if not self.slug:
+                new_slug = slugify(self.title) + "-" + str(uniqueid.lower())
+                while True:
+                    try:
+                        Product.objects.get(slug=new_slug)
+                        # Slug already exists, generate a new one
+                        uuid_key = shortuuid.uuid()
+                        uniqueid = uuid_key[:4]
+                        new_slug = slugify(self.title) + "-" + str(uniqueid.lower())
+                    except ObjectDoesNotExist:
+                        self.slug = new_slug
+                        break
+
+            if not self.meta_title:
+                new_meta_title = slugify(self.title) + "-" + str(uniqueid.lower())
+                while True:
+                    try:
+                        Product.objects.get(meta_title=new_meta_title)
+                        # Meta title already exists, generate a new one
+                        uuid_key = shortuuid.uuid()
+                        uniqueid = uuid_key[:4]
+                        new_meta_title = slugify(self.title) + "-" + str(uniqueid.lower())
+                    except ObjectDoesNotExist:
+                        self.meta_title = new_meta_title
+                        break
+
+        if self.stock_qty is not None:
             if self.stock_qty == 0:
                 self.in_stock = False
-                
-            if self.stock_qty > 0:
+            elif self.stock_qty > 0:
                 self.in_stock = True
         else:
             self.stock_qty = 0
             self.in_stock = False
-            
-        super(Product, self).save(*args, **kwargs) 
+
+        super(Product, self).save(*args, **kwargs)
 
 
 class Gallery(models.Model):

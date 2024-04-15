@@ -210,9 +210,14 @@ def shop(request):
     categories = Category.objects.filter(products__in=products).distinct()
     brands = Brand.objects.filter(product_brand__in=products).distinct()
     direct_subcategories = SubCategory.objects.none()
+
+    q=request.GET.get('q')
+    if q:
+        filtered_products = filtered_products.filter(Q(title__icontains=q) | Q(description__icontains=q) | Q(category__title__icontains=q)).distinct()
+
     for category in categories:
         direct_subcategories = direct_subcategories.union(category.subcategories.filter(parent_subcategory=None))
-    print(direct_subcategories, "bbbbbbbbbbbbbbbbbbbbbbbbb")
+
     # Filter products by price range
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
@@ -297,6 +302,13 @@ def category_shop(request, meta_title):
     direct_subcategories = category.subcategories.filter(parent_subcategory=None)
     # Get brands associated with the products
     brands = Brand.objects.filter(product_brand__in=products).distinct()
+
+
+    q=request.GET.get('q')
+    if q:
+        filtered_products = filtered_products.filter(Q(title__icontains=q) | Q(description__icontains=q) | Q(category__title__icontains=q)).distinct()
+
+
     # Filter products by price range
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
@@ -374,6 +386,13 @@ def brand_shop(request, meta_title):
 
     # Get category object
     categories = Category.objects.filter(products__in=products).distinct()
+
+    q=request.GET.get('q')
+    if q:
+        filtered_products = filtered_products.filter(Q(title__icontains=q) | Q(description__icontains=q) | Q(category__title__icontains=q)).distinct()
+
+
+
     # Get all categories and filter products by selected categories
     selected_categories = request.GET.getlist('categories')
     if selected_categories:
@@ -2077,29 +2096,54 @@ def initiate_payment(request, orderId, amount):
     success_url = request.build_absolute_uri(reverse('store:success'))
     fail_url = request.build_absolute_uri(reverse('store:failed'))
     amount_float = float(amount)
-    profile = request.user.profile
+    if request.user.is_authenticated:
+        profile = request.user.profile
 
-    payload = {
-        "receiverWalletId": konnect_wallet_id,
-        "token": "TND",
-        "amount": amount_float * 1000,  # Convert to smallest currency unit
-        "type": "immediate",
-        "description": "payment description",
-        "acceptedPaymentMethods": ["bank_card"],
-        "lifespan": 10,
-        "checkoutForm": True,
-        "addPaymentFeesToAmount": True,
-        "firstName": profile.user.first_name,  # Access user's first name from profile
-        "lastName": profile.user.last_name,    # Access user's last name from profile
-        "phoneNumber": profile.phone,          # Access phone from profile
-        "email": profile.user.email,           # Access user's email from profile
-        "orderId": orderId,
-        "webhook": webhook_url,
-        "silentWebhook": True,
-        "successUrl": success_url,
-        "failUrl": fail_url,
-        "theme": "dark"
-    }
+        payload = {
+            "receiverWalletId": konnect_wallet_id,
+            "token": "TND",
+            "amount": amount_float * 1000,  # Convert to smallest currency unit
+            "type": "immediate",
+            "description": "payment description",
+            "acceptedPaymentMethods": ["bank_card"],
+            "lifespan": 10,
+            "checkoutForm": True,
+            "addPaymentFeesToAmount": True,
+            "firstName": profile.user.first_name,  # Access user's first name from profile
+            "lastName": profile.user.last_name,    # Access user's last name from profile
+            "phoneNumber": profile.phone,          # Access phone from profile
+            "email": profile.user.email,           # Access user's email from profile
+            "orderId": orderId,
+            "webhook": webhook_url,
+            "silentWebhook": True,
+            "successUrl": success_url,
+            "failUrl": fail_url,
+            "theme": "dark"
+        }
+    else:
+        order = CartOrder.objects.get(oid=orderId)
+
+        payload = {
+            "receiverWalletId": konnect_wallet_id,
+            "token": "TND",
+            "amount": amount_float * 1000,  # Convert to smallest currency unit
+            "type": "immediate",
+            "description": "payment description",
+            "acceptedPaymentMethods": ["bank_card"],
+            "lifespan": 10,
+            "checkoutForm": True,
+            "addPaymentFeesToAmount": True,
+            "firstName": order.full_name,  # Access user's first name from profile
+            "lastName": order.full_name,    # Access user's last name from profile
+            "phoneNumber": order.mobile,          # Access phone from profile
+            "email": order.email,           # Access user's email from profile
+            "orderId": orderId,
+            "webhook": webhook_url,
+            "silentWebhook": True,
+            "successUrl": success_url,
+            "failUrl": fail_url,
+            "theme": "dark"
+        }
 
     response = requests.post(url, headers=headers, json=payload)
     print(response.content)
