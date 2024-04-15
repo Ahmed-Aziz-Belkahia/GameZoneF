@@ -2047,9 +2047,9 @@ def create_checkout_session(request, id):
         # Access the user associated with the product
         product_user = product_item.product_obj.user
         # Update gz_coins for the user by adding the gz_coins of the product
-        product_user.gz_coins += product_item.gz_coins
-        product_user.save()
-
+        if product_user:
+            product_user.gz_coins += product_item.gz_coins
+            product_user.save()
     if order.payment_method == "cash":
         print("zzzzzzzzzzzzz")
         return redirect('store:payment-completed', oid=order.oid)

@@ -408,6 +408,9 @@ class Product(models.Model):
     ending_date = models.DateTimeField(auto_now_add=False, null=True, blank=True)
     bidding_ended = models.BooleanField(default=False)
 
+    suggested_products = models.ManyToManyField('self', blank=True)
+    related_products = models.ManyToManyField('self', blank=True)
+
     views = models.PositiveIntegerField(default=0)
     saved = models.PositiveIntegerField(default=0)
     orders = models.PositiveIntegerField(default=0)
